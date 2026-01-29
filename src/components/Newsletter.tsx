@@ -30,7 +30,7 @@ const Newsletter = () => {
 
           {/* Content */}
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-primary-foreground mb-4">
-            Get Your Glow On
+            Get Your Glow with Lumière
           </h2>
           <p className="text-lg text-primary-foreground/80 mb-8">
             Subscribe for exclusive skincare tips, early access to new products, 
@@ -66,7 +66,7 @@ const Newsletter = () => {
 
           {/* Trust Badge */}
           <p className="text-sm text-primary-foreground/60 mt-6">
-            Join 50,000+ skincare enthusiasts. Unsubscribe anytime.
+            Join 50,000+ skincare enthusiasts at Lumière Beauty. Unsubscribe anytime.
           </p>
         </div>
       </div>

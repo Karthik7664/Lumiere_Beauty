@@ -6,11 +6,16 @@ import product1 from "@/assets/product-1.jpg";
 import product2 from "@/assets/product-2.jpg";
 import product3 from "@/assets/product-3.jpg";
 import product4 from "@/assets/product-4.jpg";
+import product5 from "@/assets/product-5.jpg";
+import product6 from "@/assets/product-6.jpg";
+import product7 from "@/assets/product-7.jpg";
+import product8 from "@/assets/product-8.jpg";
 
 const products = [
   {
     id: 1,
     name: "Radiance Revival Serum",
+    brand: "Lumière Luxe",
     description: "Anti-aging formula with retinol & peptides",
     price: 89,
     originalPrice: 120,
@@ -23,6 +28,7 @@ const products = [
   {
     id: 2,
     name: "Hydra-Glow Moisturizer",
+    brand: "AquaVeil",
     description: "48-hour hydration with hyaluronic acid",
     price: 65,
     originalPrice: null,
@@ -35,6 +41,7 @@ const products = [
   {
     id: 3,
     name: "Vitamin C Brightening Essence",
+    brand: "CitraGlow",
     description: "Dark spot correction & luminosity boost",
     price: 75,
     originalPrice: 95,
@@ -47,6 +54,7 @@ const products = [
   {
     id: 4,
     name: "Aqua-Boost Hydrating Serum",
+    brand: "DeepSea Labs",
     description: "Deep hydration with marine collagen",
     price: 79,
     originalPrice: null,
@@ -54,6 +62,58 @@ const products = [
     reviews: 987,
     image: product4,
     badge: null,
+    badgeVariant: "default" as const,
+  },
+  {
+    id: 5,
+    name: "Retinol Night Renewal",
+    brand: "NightLux Pro",
+    description: "Advanced overnight repair treatment",
+    price: 125,
+    originalPrice: 150,
+    rating: 4.8,
+    reviews: 2134,
+    image: product5,
+    badge: "Premium",
+    badgeVariant: "default" as const,
+  },
+  {
+    id: 6,
+    name: "Pore Minimizing Serum",
+    brand: "ClearSkin Co.",
+    description: "10% Niacinamide for refined pores",
+    price: 55,
+    originalPrice: null,
+    rating: 4.6,
+    reviews: 1678,
+    image: product6,
+    badge: null,
+    badgeVariant: "default" as const,
+  },
+  {
+    id: 7,
+    name: "Green Tea Face Mist",
+    brand: "Botanical Bliss",
+    description: "Antioxidant refresh & setting spray",
+    price: 38,
+    originalPrice: 48,
+    rating: 4.7,
+    reviews: 892,
+    image: product7,
+    badge: "Organic",
+    badgeVariant: "secondary" as const,
+  },
+  {
+    id: 8,
+    name: "Collagen Eye Cream",
+    brand: "Éclat Paris",
+    description: "Reduces dark circles & fine lines",
+    price: 95,
+    originalPrice: null,
+    rating: 4.9,
+    reviews: 1543,
+    image: product8,
+    badge: "Trending",
     badgeVariant: "default" as const,
   },
 ];
@@ -69,7 +129,7 @@ const Products = () => {
             Science-Backed <span className="text-primary">Skincare</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            Each product is carefully formulated with clinically proven ingredients 
+            Curated products from leading brands, carefully formulated with clinically proven ingredients 
             for visible, lasting results.
           </p>
         </div>
@@ -119,6 +179,11 @@ const Products = () => {
 
               {/* Content */}
               <CardContent className="p-5">
+                {/* Brand */}
+                <p className="text-xs font-medium text-primary uppercase tracking-wider mb-1">
+                  {product.brand}
+                </p>
+
                 {/* Rating */}
                 <div className="flex items-center gap-2 mb-2">
                   <div className="flex items-center">
