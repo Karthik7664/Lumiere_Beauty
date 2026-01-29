@@ -49,7 +49,7 @@ const Features = () => {
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="text-primary font-medium mb-4 block">Why Choose Us</span>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6">
-            The <span className="text-primary">GlowAI</span> Difference
+            The <span className="text-primary">Lumière</span> Difference
           </h2>
           <p className="text-lg text-muted-foreground">
             We combine cutting-edge technology with nature's finest ingredients 

@@ -41,7 +41,7 @@ const Footer = () => {
             <a href="/" className="flex items-center gap-2 mb-6">
               <Sparkles className="w-8 h-8 text-primary" />
               <span className="text-2xl font-serif font-bold">
-                Glow<span className="text-primary">AI</span>
+                Lumière<span className="text-primary">Beauty</span>
               </span>
             </a>
             <p className="text-background/70 mb-6 max-w-sm leading-relaxed">
@@ -118,7 +118,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-background/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-background/50 text-sm">
-            © 2026 GlowAI. All rights reserved.
+            © 2026 Lumière Beauty. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
             <a href="#" className="text-background/50 hover:text-background transition-colors">
