@@ -1,0 +1,408 @@
+import { useState, useRef } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { 
+  Camera, 
+  Upload, 
+  Loader2, 
+  Sparkles, 
+  Droplets, 
+  Sun, 
+  Heart,
+  CheckCircle2,
+  AlertCircle,
+  ShoppingBag,
+  X
+} from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import product1 from "@/assets/product-1.jpg";
+import product2 from "@/assets/product-2.jpg";
+import product3 from "@/assets/product-3.jpg";
+import product4 from "@/assets/product-4.jpg";
+import product5 from "@/assets/product-5.jpg";
+import product6 from "@/assets/product-6.jpg";
+import product7 from "@/assets/product-7.jpg";
+import product8 from "@/assets/product-8.jpg";
+
+const productImages: Record<number, string> = {
+  1: product1,
+  2: product2,
+  3: product3,
+  4: product4,
+  5: product5,
+  6: product6,
+  7: product7,
+  8: product8,
+};
+
+interface SkinAnalysis {
+  overallScore: number;
+  skinType: string;
+  hydrationLevel: number;
+  elasticityLevel: number;
+  radianceLevel: number;
+  concerns: string[];
+  recommendations: string[];
+  routineSuggestions: {
+    morning: string[];
+    evening: string[];
+  };
+}
+
+interface RecommendedProduct {
+  id: number;
+  name: string;
+  brand: string;
+  price: number;
+}
+
+interface SkinAnalysisModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const SkinAnalysisModal = ({ isOpen, onClose }: SkinAnalysisModalProps) => {
+  const [step, setStep] = useState<"upload" | "analyzing" | "results">("upload");
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [analysis, setAnalysis] = useState<SkinAnalysis | null>(null);
+  const [recommendedProducts, setRecommendedProducts] = useState<RecommendedProduct[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please upload an image under 10MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64 = reader.result as string;
+      setPreviewImage(base64);
+      await analyzeImage(base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const analyzeImage = async (imageBase64: string) => {
+    setStep("analyzing");
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-skin`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ imageBase64 }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Analysis failed");
+      }
+
+      const data = await response.json();
+      setAnalysis(data.analysis);
+      setRecommendedProducts(data.recommendedProducts);
+      setStep("results");
+    } catch (error) {
+      console.error("Analysis error:", error);
+      toast({
+        title: "Analysis failed",
+        description: error instanceof Error ? error.message : "Please try again.",
+        variant: "destructive",
+      });
+      setStep("upload");
+      setPreviewImage(null);
+    }
+  };
+
+  const resetAnalysis = () => {
+    setStep("upload");
+    setPreviewImage(null);
+    setAnalysis(null);
+    setRecommendedProducts([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleClose = () => {
+    resetAnalysis();
+    onClose();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-card">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-2xl font-serif">
+            <Sparkles className="w-6 h-6 text-primary" />
+            AI Skin Analysis
+          </DialogTitle>
+        </DialogHeader>
+
+        {step === "upload" && (
+          <div className="py-8">
+            <div 
+              className="border-2 border-dashed border-border rounded-2xl p-12 text-center hover:border-primary transition-colors cursor-pointer"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              
+              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+                <Upload className="w-10 h-10 text-primary" />
+              </div>
+              
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                Upload Your Photo
+              </h3>
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                Take a clear, well-lit selfie or upload an existing photo. 
+                Our AI will analyze your skin and provide personalized recommendations.
+              </p>
+              
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Camera className="w-5 h-5 mr-2" />
+                Choose Photo
+              </Button>
+            </div>
+
+            <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+              {[
+                { icon: Sun, text: "Good lighting" },
+                { icon: Camera, text: "Clear focus" },
+                { icon: Heart, text: "No makeup preferred" },
+              ].map((tip, index) => (
+                <div key={index} className="flex flex-col items-center gap-2">
+                  <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center">
+                    <tip.icon className="w-5 h-5 text-accent-foreground" />
+                  </div>
+                  <span className="text-sm text-muted-foreground">{tip.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step === "analyzing" && (
+          <div className="py-16 text-center">
+            {previewImage && (
+              <div className="w-32 h-32 rounded-full overflow-hidden mx-auto mb-8 border-4 border-primary/20">
+                <img 
+                  src={previewImage} 
+                  alt="Your photo" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            
+            <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-6" />
+            
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              Analyzing Your Skin...
+            </h3>
+            <p className="text-muted-foreground">
+              Our AI is examining your skin for hydration, elasticity, concerns, and more.
+            </p>
+          </div>
+        )}
+
+        {step === "results" && analysis && (
+          <div className="py-4 space-y-8">
+            {/* Overall Score */}
+            <div className="flex items-center gap-6">
+              {previewImage && (
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary/20 flex-shrink-0">
+                  <img 
+                    src={previewImage} 
+                    alt="Your photo" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-lg font-semibold">Overall Skin Health</span>
+                  <span className="text-3xl font-bold text-primary">{analysis.overallScore}%</span>
+                </div>
+                <Progress value={analysis.overallScore} className="h-3" />
+                <p className="text-sm text-muted-foreground mt-2">
+                  Skin Type: <span className="font-medium text-foreground capitalize">{analysis.skinType}</span>
+                </p>
+              </div>
+            </div>
+
+            {/* Metrics */}
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { label: "Hydration", value: analysis.hydrationLevel, icon: Droplets },
+                { label: "Elasticity", value: analysis.elasticityLevel, icon: Heart },
+                { label: "Radiance", value: analysis.radianceLevel, icon: Sun },
+              ].map((metric) => (
+                <Card key={metric.label} className="p-4 bg-background">
+                  <div className="flex items-center gap-2 mb-2">
+                    <metric.icon className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium">{metric.label}</span>
+                  </div>
+                  <div className="text-2xl font-bold text-foreground mb-1">{metric.value}%</div>
+                  <Progress value={metric.value} className="h-2" />
+                </Card>
+              ))}
+            </div>
+
+            {/* Concerns */}
+            {analysis.concerns.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-accent-foreground" />
+                  Identified Concerns
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {analysis.concerns.map((concern, index) => (
+                    <span 
+                      key={index}
+                      className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-sm"
+                    >
+                      {concern}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recommendations */}
+            {analysis.recommendations.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-primary" />
+                  Expert Recommendations
+                </h4>
+                <ul className="space-y-2">
+                  {analysis.recommendations.map((rec, index) => (
+                    <li key={index} className="flex items-start gap-2 text-muted-foreground">
+                      <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      {rec}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Routine Suggestions */}
+            {analysis.routineSuggestions && (
+              <div className="grid md:grid-cols-2 gap-4">
+                <Card className="p-4 bg-background">
+                  <h5 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Sun className="w-4 h-4 text-primary" />
+                    Morning Routine
+                  </h5>
+                  <ol className="space-y-2">
+                    {analysis.routineSuggestions.morning.map((step, index) => (
+                      <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <span className="w-5 h-5 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center flex-shrink-0">
+                          {index + 1}
+                        </span>
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
+                </Card>
+                <Card className="p-4 bg-background">
+                  <h5 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                    Evening Routine
+                  </h5>
+                  <ol className="space-y-2">
+                    {analysis.routineSuggestions.evening.map((step, index) => (
+                      <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <span className="w-5 h-5 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center flex-shrink-0">
+                          {index + 1}
+                        </span>
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
+                </Card>
+              </div>
+            )}
+
+            {/* Product Recommendations */}
+            {recommendedProducts.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <ShoppingBag className="w-5 h-5 text-primary" />
+                  Recommended Products for You
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {recommendedProducts.map((product) => (
+                    <Card key={product.id} className="overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
+                      <div className="aspect-square overflow-hidden">
+                        <img 
+                          src={productImages[product.id]} 
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-3">
+                        <p className="text-xs text-primary font-medium uppercase">{product.brand}</p>
+                        <p className="text-sm font-semibold text-foreground line-clamp-2">{product.name}</p>
+                        <p className="text-sm font-bold text-foreground mt-1">${product.price}</p>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-4 pt-4">
+              <Button 
+                variant="outline" 
+                onClick={resetAnalysis}
+                className="flex-1"
+              >
+                Analyze Another Photo
+              </Button>
+              <Button 
+                onClick={handleClose}
+                className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Shop Recommended Products
+              </Button>
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default SkinAnalysisModal;
