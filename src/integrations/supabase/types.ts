@@ -14,13 +14,85 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      skin_analyses: {
+        Row: {
+          concerns: string[]
+          created_at: string
+          elasticity_level: number
+          evening_routine: string[]
+          hydration_level: number
+          id: string
+          image_url: string | null
+          morning_routine: string[]
+          overall_score: number
+          radiance_level: number
+          recommendations: string[]
+          recommended_products: Json
+          skin_type: string
+          user_id: string
+        }
+        Insert: {
+          concerns?: string[]
+          created_at?: string
+          elasticity_level: number
+          evening_routine?: string[]
+          hydration_level: number
+          id?: string
+          image_url?: string | null
+          morning_routine?: string[]
+          overall_score: number
+          radiance_level: number
+          recommendations?: string[]
+          recommended_products?: Json
+          skin_type: string
+          user_id: string
+        }
+        Update: {
+          concerns?: string[]
+          created_at?: string
+          elasticity_level?: number
+          evening_routine?: string[]
+          hydration_level?: number
+          id?: string
+          image_url?: string | null
+          morning_routine?: string[]
+          overall_score?: number
+          radiance_level?: number
+          recommendations?: string[]
+          recommended_products?: Json
+          skin_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_profile_owner: { Args: { _profile_id: string }; Returns: boolean }
+      is_skin_analysis_owner: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

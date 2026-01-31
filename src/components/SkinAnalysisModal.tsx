@@ -14,9 +14,11 @@ import {
   CheckCircle2,
   AlertCircle,
   ShoppingBag,
-  X
+  Save
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import product1 from "@/assets/product-1.jpg";
 import product2 from "@/assets/product-2.jpg";
 import product3 from "@/assets/product-3.jpg";
@@ -68,7 +70,10 @@ const SkinAnalysisModal = ({ isOpen, onClose }: SkinAnalysisModalProps) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<SkinAnalysis | null>(null);
   const [recommendedProducts, setRecommendedProducts] = useState<RecommendedProduct[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,11 +143,50 @@ const SkinAnalysisModal = ({ isOpen, onClose }: SkinAnalysisModalProps) => {
     }
   };
 
+  const saveAnalysis = async () => {
+    if (!user || !analysis) return;
+    
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("skin_analyses").insert({
+        user_id: user.id,
+        overall_score: analysis.overallScore,
+        skin_type: analysis.skinType,
+        hydration_level: analysis.hydrationLevel,
+        elasticity_level: analysis.elasticityLevel,
+        radiance_level: analysis.radianceLevel,
+        concerns: analysis.concerns,
+        recommendations: analysis.recommendations,
+        morning_routine: analysis.routineSuggestions.morning,
+        evening_routine: analysis.routineSuggestions.evening,
+        recommended_products: recommendedProducts,
+      });
+
+      if (error) throw error;
+      
+      setSaved(true);
+      toast({
+        title: "Analysis saved!",
+        description: "View your skin journey in the dashboard.",
+      });
+    } catch (error) {
+      console.error("Error saving analysis:", error);
+      toast({
+        title: "Failed to save",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const resetAnalysis = () => {
     setStep("upload");
     setPreviewImage(null);
     setAnalysis(null);
     setRecommendedProducts([]);
+    setSaved(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -391,6 +435,27 @@ const SkinAnalysisModal = ({ isOpen, onClose }: SkinAnalysisModalProps) => {
               >
                 Analyze Another Photo
               </Button>
+              {user && !saved && (
+                <Button
+                  variant="outline"
+                  onClick={saveAnalysis}
+                  disabled={saving}
+                  className="flex-1"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                  Save to History
+                </Button>
+              )}
+              {saved && (
+                <Button
+                  variant="outline"
+                  className="flex-1 text-primary"
+                  disabled
+                >
+                  <CheckCircle2 className="w-4 h-4 mr-2" />
+                  Saved!
+                </Button>
+              )}
               <Button 
                 onClick={handleClose}
                 className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
