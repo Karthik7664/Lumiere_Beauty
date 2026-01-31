@@ -159,8 +159,8 @@ const SkinAnalysisModal = ({ isOpen, onClose }: SkinAnalysisModalProps) => {
         recommendations: analysis.recommendations,
         morning_routine: analysis.routineSuggestions.morning,
         evening_routine: analysis.routineSuggestions.evening,
-        recommended_products: recommendedProducts,
-      });
+        recommended_products: recommendedProducts as unknown as Record<string, unknown>,
+      } as never);
 
       if (error) throw error;
       
