@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import AIAnalysis from "@/components/AIAnalysis";
-import Products from "@/components/Products";
+import ProductGrid from "@/components/products/ProductGrid";
 import Features from "@/components/Features";
 import Newsletter from "@/components/Newsletter";
 import Footer from "@/components/Footer";
@@ -12,7 +12,7 @@ const Index = () => {
       <Navbar />
       <Hero />
       <AIAnalysis />
-      <Products />
+      <ProductGrid />
       <Features />
       <Newsletter />
       <Footer />

@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Menu, X, Sparkles, User, LogOut, BarChart3 } from "lucide-react";
+import { Menu, X, Sparkles, User, LogOut, BarChart3, Heart, Package } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import AuthModal from "@/components/AuthModal";
+import CartDrawer from "@/components/cart/CartDrawer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +18,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { items: wishlistItems } = useWishlist();
   const navigate = useNavigate();
 
   const navLinks = [
@@ -35,12 +38,12 @@ const Navbar = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <a href="/" className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2">
               <Sparkles className="w-8 h-8 text-primary" />
               <span className="text-2xl font-serif font-bold text-foreground">
                 Lumière<span className="text-primary">Beauty</span>
               </span>
-            </a>
+            </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
@@ -56,7 +59,7 @@ const Navbar = () => {
             </div>
 
             {/* Right Actions */}
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2">
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -68,6 +71,10 @@ const Navbar = () => {
                     <DropdownMenuItem onClick={() => navigate("/dashboard")}>
                       <BarChart3 className="w-4 h-4 mr-2" />
                       My Skin Journey
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/orders")}>
+                      <Package className="w-4 h-4 mr-2" />
+                      My Orders
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
@@ -81,18 +88,31 @@ const Navbar = () => {
                   <User className="w-5 h-5" />
                 </Button>
               )}
-              <Button variant="ghost" size="icon" className="relative hover:text-primary">
-                <ShoppingBag className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
-                  2
-                </span>
+              
+              {/* Wishlist */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative hover:text-primary"
+                onClick={() => navigate("/wishlist")}
+              >
+                <Heart className="w-5 h-5" />
+                {wishlistItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
+                    {wishlistItems.length}
+                  </span>
+                )}
               </Button>
+
+              {/* Cart */}
+              <CartDrawer />
+
               {user ? (
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => navigate("/dashboard")}>
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 ml-2" onClick={() => navigate("/dashboard")}>
                   My Dashboard
                 </Button>
               ) : (
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setIsAuthModalOpen(true)}>
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 ml-2" onClick={() => setIsAuthModalOpen(true)}>
                   Get Started
                 </Button>
               )}
@@ -122,13 +142,29 @@ const Navbar = () => {
                   </a>
                 ))}
                 {user && (
-                  <a
-                    href="/dashboard"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    My Skin Journey
-                  </a>
+                  <>
+                    <Link
+                      to="/dashboard"
+                      className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Skin Journey
+                    </Link>
+                    <Link
+                      to="/orders"
+                      className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Orders
+                    </Link>
+                    <Link
+                      to="/wishlist"
+                      className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Wishlist ({wishlistItems.length})
+                    </Link>
+                  </>
                 )}
                 <div className="flex gap-4 mt-4">
                   {user ? (
