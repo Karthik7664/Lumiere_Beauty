@@ -7,8 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Grid3X3, LayoutGrid, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const PRODUCTS_PER_PAGE = 12;
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "rating" | "name";
 
@@ -18,6 +29,7 @@ const Shop = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [gridCols, setGridCols] = useState<"3" | "4">("4");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredAndSortedProducts = useMemo(() => {
     if (!products) return [];
@@ -54,6 +66,41 @@ const Shop = () => {
     return filtered;
   }, [products, selectedCategory, sortBy]);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / PRODUCTS_PER_PAGE);
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    return filteredAndSortedProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
+  }, [filteredAndSortedProducts, currentPage]);
+
+  // Reset to page 1 when filters change
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (value: SortOption) => {
+    setSortBy(value);
+    setCurrentPage(1);
+  };
+
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages: (number | "ellipsis")[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("ellipsis");
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+        pages.push(i);
+      }
+      if (currentPage < totalPages - 2) pages.push("ellipsis");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   const isLoading = productsLoading || categoriesLoading;
 
   return (
@@ -84,7 +131,7 @@ const Shop = () => {
               <Button
                 variant={selectedCategory === "all" ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSelectedCategory("all")}
+                onClick={() => handleCategoryChange("all")}
               >
                 All Products
               </Button>
@@ -93,7 +140,7 @@ const Shop = () => {
                   key={category.id}
                   variant={selectedCategory === category.id ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setSelectedCategory(category.id)}
+                  onClick={() => handleCategoryChange(category.id)}
                 >
                   {category.name}
                 </Button>
@@ -102,7 +149,7 @@ const Shop = () => {
 
             {/* Sort and Grid Controls */}
             <div className="flex items-center gap-4">
-              <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+              <Select value={sortBy} onValueChange={(v) => handleSortChange(v as SortOption)}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -133,8 +180,9 @@ const Shop = () => {
 
           {/* Results Count */}
           <p className="text-sm text-muted-foreground mb-6">
-            Showing {filteredAndSortedProducts.length} product
+            Showing {paginatedProducts.length} of {filteredAndSortedProducts.length} product
             {filteredAndSortedProducts.length !== 1 ? "s" : ""}
+            {totalPages > 1 && ` • Page ${currentPage} of ${totalPages}`}
           </p>
 
           {/* Products Grid */}
@@ -163,24 +211,71 @@ const Shop = () => {
               <Button
                 variant="outline"
                 className="mt-4"
-                onClick={() => setSelectedCategory("all")}
+                onClick={() => handleCategoryChange("all")}
               >
                 View All Products
               </Button>
             </div>
           ) : (
-            <div
-              className={cn(
-                "grid gap-6",
-                gridCols === "3"
-                  ? "md:grid-cols-2 lg:grid-cols-3"
-                  : "md:grid-cols-2 lg:grid-cols-4"
+            <>
+              <div
+                className={cn(
+                  "grid gap-6",
+                  gridCols === "3"
+                    ? "md:grid-cols-2 lg:grid-cols-3"
+                    : "md:grid-cols-2 lg:grid-cols-4"
+                )}
+              >
+                {paginatedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <Pagination className="mt-12">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        className={cn(
+                          "cursor-pointer",
+                          currentPage === 1 && "pointer-events-none opacity-50"
+                        )}
+                      />
+                    </PaginationItem>
+
+                    {getPageNumbers().map((page, idx) =>
+                      page === "ellipsis" ? (
+                        <PaginationItem key={`ellipsis-${idx}`}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      ) : (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(page)}
+                            isActive={currentPage === page}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )
+                    )}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        className={cn(
+                          "cursor-pointer",
+                          currentPage === totalPages && "pointer-events-none opacity-50"
+                        )}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               )}
-            >
-              {filteredAndSortedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            </>
           )}
         </div>
       </section>
