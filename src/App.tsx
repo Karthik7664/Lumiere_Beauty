@@ -13,6 +13,7 @@ import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import Orders from "./pages/Orders";
 import Wishlist from "./pages/Wishlist";
+import Shop from "./pages/Shop";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/shop" element={<Shop />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/product/:slug" element={<ProductDetail />} />
                 <Route path="/checkout" element={<Checkout />} />
