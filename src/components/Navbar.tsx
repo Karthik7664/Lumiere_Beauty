@@ -22,10 +22,10 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const navLinks = [
-    { name: "Shop", href: "#products" },
-    { name: "AI Analysis", href: "#ai-analysis" },
-    { name: "Ingredients", href: "#ingredients" },
-    { name: "About", href: "#about" },
+    { name: "Shop", href: "/shop", isRoute: true },
+    { name: "AI Analysis", href: "#ai-analysis", isRoute: false },
+    { name: "Ingredients", href: "#ingredients", isRoute: false },
+    { name: "About", href: "#about", isRoute: false },
   ];
 
   const handleSignOut = async () => {
@@ -47,15 +47,25 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
-                >
-                  {link.name}
-                </a>
-              ))}
+              {navLinks.map((link) =>
+                link.isRoute ? (
+                  <Link
+                    key={link.name}
+                    to={link.href}
+                    className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+                  >
+                    {link.name}
+                  </Link>
+                ) : (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+                  >
+                    {link.name}
+                  </a>
+                )
+              )}
             </div>
 
             {/* Right Actions */}
@@ -131,16 +141,27 @@ const Navbar = () => {
           {isMenuOpen && (
             <div className="md:hidden mt-4 pb-4 border-t border-border pt-4">
               <div className="flex flex-col gap-4">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {link.name}
-                  </a>
-                ))}
+                {navLinks.map((link) =>
+                  link.isRoute ? (
+                    <Link
+                      key={link.name}
+                      to={link.href}
+                      className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a
+                      key={link.name}
+                      href={link.href}
+                      className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {link.name}
+                    </a>
+                  )
+                )}
                 {user && (
                   <>
                     <Link
