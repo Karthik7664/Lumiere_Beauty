@@ -4,6 +4,7 @@ import ProductCard from "@/components/products/ProductCard";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,7 +17,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Grid3X3, LayoutGrid, SlidersHorizontal } from "lucide-react";
+import { Grid3X3, LayoutGrid, Search, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const PRODUCTS_PER_PAGE = 12;
@@ -30,11 +31,23 @@ const Shop = () => {
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [gridCols, setGridCols] = useState<"3" | "4">("4");
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredAndSortedProducts = useMemo(() => {
     if (!products) return [];
 
     let filtered = [...products];
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query) ||
+          p.description.toLowerCase().includes(query) ||
+          p.brand.toLowerCase().includes(query)
+      );
+    }
 
     // Filter by category
     if (selectedCategory !== "all") {
@@ -64,7 +77,7 @@ const Shop = () => {
     }
 
     return filtered;
-  }, [products, selectedCategory, sortBy]);
+  }, [products, selectedCategory, sortBy, searchQuery]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredAndSortedProducts.length / PRODUCTS_PER_PAGE);
@@ -81,6 +94,16 @@ const Shop = () => {
 
   const handleSortChange = (value: SortOption) => {
     setSortBy(value);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
     setCurrentPage(1);
   };
 
@@ -123,6 +146,26 @@ const Shop = () => {
       {/* Filters and Products */}
       <section className="py-12">
         <div className="container mx-auto px-4">
+          {/* Search Bar */}
+          <div className="relative mb-6">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search products by name, description, or brand..."
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="pl-10 pr-10 max-w-md"
+            />
+            {searchQuery && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
           {/* Filter Bar */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-border">
             {/* Category Filter */}
@@ -206,12 +249,17 @@ const Shop = () => {
           ) : filteredAndSortedProducts.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-muted-foreground text-lg">
-                No products found in this category.
+                {searchQuery
+                  ? `No products found for "${searchQuery}"`
+                  : "No products found in this category."}
               </p>
               <Button
                 variant="outline"
                 className="mt-4"
-                onClick={() => handleCategoryChange("all")}
+                onClick={() => {
+                  handleCategoryChange("all");
+                  clearSearch();
+                }}
               >
                 View All Products
               </Button>
