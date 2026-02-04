@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
 import {
   Pagination,
   PaginationContent,
@@ -17,8 +18,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Grid3X3, LayoutGrid, Search, SlidersHorizontal, X } from "lucide-react";
+import { DollarSign, Grid3X3, LayoutGrid, Search, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
 
 const PRODUCTS_PER_PAGE = 12;
 
@@ -32,6 +34,17 @@ const Shop = () => {
   const [gridCols, setGridCols] = useState<"3" | "4">("4");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
+
+  // Get min/max prices from products
+  const { minPrice, maxPrice } = useMemo(() => {
+    if (!products || products.length === 0) return { minPrice: 0, maxPrice: 500 };
+    const prices = products.map((p) => p.price);
+    return {
+      minPrice: Math.floor(Math.min(...prices)),
+      maxPrice: Math.ceil(Math.max(...prices)),
+    };
+  }, [products]);
 
   const filteredAndSortedProducts = useMemo(() => {
     if (!products) return [];
@@ -53,6 +66,11 @@ const Shop = () => {
     if (selectedCategory !== "all") {
       filtered = filtered.filter((p) => p.category_id === selectedCategory);
     }
+
+    // Filter by price range
+    filtered = filtered.filter(
+      (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
+    );
 
     // Sort products
     switch (sortBy) {
@@ -77,7 +95,7 @@ const Shop = () => {
     }
 
     return filtered;
-  }, [products, selectedCategory, sortBy, searchQuery]);
+  }, [products, selectedCategory, sortBy, searchQuery, priceRange]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredAndSortedProducts.length / PRODUCTS_PER_PAGE);
@@ -104,6 +122,18 @@ const Shop = () => {
 
   const clearSearch = () => {
     setSearchQuery("");
+    setCurrentPage(1);
+  };
+
+  const handlePriceChange = (values: number[]) => {
+    setPriceRange([values[0], values[1]]);
+    setCurrentPage(1);
+  };
+
+  const resetFilters = () => {
+    setSelectedCategory("all");
+    setSearchQuery("");
+    setPriceRange([minPrice, maxPrice]);
     setCurrentPage(1);
   };
 
@@ -164,6 +194,29 @@ const Shop = () => {
                 <X className="w-4 h-4" />
               </button>
             )}
+          </div>
+
+          {/* Price Range Filter */}
+          <div className="mb-6 p-4 bg-muted/30 rounded-lg max-w-md">
+            <div className="flex items-center gap-2 mb-3">
+              <DollarSign className="w-4 h-4 text-muted-foreground" />
+              <Label className="font-medium">Price Range</Label>
+              <span className="text-sm text-muted-foreground ml-auto">
+                ${priceRange[0]} - ${priceRange[1]}
+              </span>
+            </div>
+            <Slider
+              min={minPrice}
+              max={maxPrice}
+              step={1}
+              value={priceRange}
+              onValueChange={handlePriceChange}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+              <span>${minPrice}</span>
+              <span>${maxPrice}</span>
+            </div>
           </div>
 
           {/* Filter Bar */}
@@ -251,17 +304,14 @@ const Shop = () => {
               <p className="text-muted-foreground text-lg">
                 {searchQuery
                   ? `No products found for "${searchQuery}"`
-                  : "No products found in this category."}
+                  : "No products found matching your filters."}
               </p>
               <Button
                 variant="outline"
                 className="mt-4"
-                onClick={() => {
-                  handleCategoryChange("all");
-                  clearSearch();
-                }}
+                onClick={resetFilters}
               >
-                View All Products
+                Clear All Filters
               </Button>
             </div>
           ) : (
