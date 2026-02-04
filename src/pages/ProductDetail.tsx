@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Heart,
   ShoppingBag,
@@ -21,6 +22,9 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import ReviewForm from "@/components/reviews/ReviewForm";
+import ReviewList from "@/components/reviews/ReviewList";
+import ReviewSummary from "@/components/reviews/ReviewSummary";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -247,6 +251,32 @@ const ProductDetail = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mt-16">
+          <Separator className="mb-8" />
+          <h2 className="text-2xl font-serif font-bold text-foreground mb-6">
+            Customer Reviews
+          </h2>
+          
+          <Tabs defaultValue="reviews" className="w-full">
+            <TabsList className="mb-6">
+              <TabsTrigger value="reviews">All Reviews</TabsTrigger>
+              <TabsTrigger value="write">Write a Review</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="reviews" className="space-y-6">
+              <ReviewSummary productId={product.id} />
+              <ReviewList productId={product.id} />
+            </TabsContent>
+            
+            <TabsContent value="write">
+              <div className="max-w-lg">
+                <ReviewForm productId={product.id} />
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
