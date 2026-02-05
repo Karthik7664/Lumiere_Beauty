@@ -5,6 +5,7 @@ import { ShoppingBag, Minus, Plus, Trash2, ArrowRight } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { formatPrice } from "@/lib/currency";
 
 interface CartDrawerProps {
   trigger?: React.ReactNode;
@@ -70,7 +71,7 @@ const CartDrawer = ({ trigger }: CartDrawerProps) => {
                     </p>
                     <h4 className="font-medium truncate">{item.product?.name}</h4>
                     <p className="text-lg font-bold mt-1">
-                      ${item.product?.price.toFixed(2)}
+                      {formatPrice(item.product?.price || 0)}
                     </p>
 
                     <div className="flex items-center justify-between mt-2">
@@ -116,7 +117,7 @@ const CartDrawer = ({ trigger }: CartDrawerProps) => {
             <div className="border-t pt-4 space-y-4">
               <div className="flex justify-between text-lg font-semibold">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 Shipping and taxes calculated at checkout

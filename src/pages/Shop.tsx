@@ -18,9 +18,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { DollarSign, Grid3X3, LayoutGrid, Search, SlidersHorizontal, X } from "lucide-react";
+import { IndianRupee, Grid3X3, LayoutGrid, Search, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { formatPrice } from "@/lib/currency";
 
 const PRODUCTS_PER_PAGE = 12;
 
@@ -34,11 +35,11 @@ const Shop = () => {
   const [gridCols, setGridCols] = useState<"3" | "4">("4");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
 
   // Get min/max prices from products
   const { minPrice, maxPrice } = useMemo(() => {
-    if (!products || products.length === 0) return { minPrice: 0, maxPrice: 500 };
+    if (!products || products.length === 0) return { minPrice: 0, maxPrice: 50000 };
     const prices = products.map((p) => p.price);
     return {
       minPrice: Math.floor(Math.min(...prices)),
@@ -199,23 +200,23 @@ const Shop = () => {
           {/* Price Range Filter */}
           <div className="mb-6 p-4 bg-muted/30 rounded-lg max-w-md">
             <div className="flex items-center gap-2 mb-3">
-              <DollarSign className="w-4 h-4 text-muted-foreground" />
+              <IndianRupee className="w-4 h-4 text-muted-foreground" />
               <Label className="font-medium">Price Range</Label>
               <span className="text-sm text-muted-foreground ml-auto">
-                ${priceRange[0]} - ${priceRange[1]}
+                {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
               </span>
             </div>
             <Slider
               min={minPrice}
               max={maxPrice}
-              step={1}
+              step={100}
               value={priceRange}
               onValueChange={handlePriceChange}
               className="w-full"
             />
             <div className="flex justify-between text-xs text-muted-foreground mt-1">
-              <span>${minPrice}</span>
-              <span>${maxPrice}</span>
+              <span>{formatPrice(minPrice)}</span>
+              <span>{formatPrice(maxPrice)}</span>
             </div>
           </div>
 
