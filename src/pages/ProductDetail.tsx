@@ -25,6 +25,7 @@ import Footer from "@/components/Footer";
 import ReviewForm from "@/components/reviews/ReviewForm";
 import ReviewList from "@/components/reviews/ReviewList";
 import ReviewSummary from "@/components/reviews/ReviewSummary";
+import { formatPrice } from "@/lib/currency";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -127,12 +128,12 @@ const ProductDetail = () => {
             {/* Price */}
             <div className="flex items-center gap-4">
               <span className="text-3xl font-bold text-foreground">
-                ${product.price.toFixed(2)}
+                {formatPrice(product.price)}
               </span>
               {product.original_price && (
                 <>
                   <span className="text-xl text-muted-foreground line-through">
-                    ${product.original_price.toFixed(2)}
+                    {formatPrice(product.original_price)}
                   </span>
                   <Badge variant="destructive">
                     {Math.round(
@@ -208,14 +209,14 @@ const ProductDetail = () => {
                 <Truck className="h-8 w-8 text-primary mb-2" />
                 <span className="text-sm font-medium">Free Shipping</span>
                 <span className="text-xs text-muted-foreground">
-                  On orders $50+
+                  On orders ₹999+
                 </span>
               </div>
               <div className="flex flex-col items-center text-center">
                 <Shield className="h-8 w-8 text-primary mb-2" />
                 <span className="text-sm font-medium">Secure Payment</span>
                 <span className="text-xs text-muted-foreground">
-                  100% protected
+                  COD Available
                 </span>
               </div>
               <div className="flex flex-col items-center text-center">

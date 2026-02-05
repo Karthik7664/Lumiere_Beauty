@@ -7,6 +7,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { formatPrice } from "@/lib/currency";
 
 interface ProductCardProps {
   product: Product;
@@ -121,11 +122,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
         {/* Price */}
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold text-foreground">
-            ${product.price.toFixed(2)}
+            {formatPrice(product.price)}
           </span>
           {product.original_price && (
             <span className="text-sm text-muted-foreground line-through">
-              ${product.original_price.toFixed(2)}
+              {formatPrice(product.original_price)}
             </span>
           )}
         </div>

@@ -13,6 +13,7 @@ import { ShippingAddress } from "@/types/ecommerce";
 import { ArrowLeft, CreditCard, Lock, Package } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { formatPrice } from "@/lib/currency";
 
 const Checkout = () => {
   const { items, subtotal, clearCart } = useCart();
@@ -30,11 +31,11 @@ const Checkout = () => {
     city: "",
     state: "",
     zipCode: "",
-    country: "United States",
+    country: "India",
   });
 
-  const shippingCost = subtotal >= 50 ? 0 : 9.99;
-  const tax = subtotal * 0.08; // 8% tax
+  const shippingCost = subtotal >= 999 ? 0 : 99;
+  const tax = subtotal * 0.18; // 18% GST
   const total = subtotal + shippingCost + tax;
 
   const handleInputChange = (field: keyof ShippingAddress, value: string) => {
@@ -270,7 +271,7 @@ const Checkout = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="zipCode">ZIP Code</Label>
+                      <Label htmlFor="zipCode">PIN Code</Label>
                       <Input
                         id="zipCode"
                         value={shippingAddress.zipCode}
@@ -296,8 +297,8 @@ const Checkout = () => {
                     <Lock className="h-8 w-8 text-primary mx-auto mb-3" />
                     <p className="font-medium mb-2">Demo Checkout</p>
                     <p className="text-sm text-muted-foreground">
-                      This is a demo checkout. No real payment will be processed.
-                      Click "Place Order" to simulate a successful payment.
+                      This is a demo checkout. COD (Cash on Delivery) and UPI payments available.
+                      Click "Place Order" to simulate a successful order.
                     </p>
                   </div>
                 </CardContent>
@@ -328,10 +329,9 @@ const Checkout = () => {
                             Qty: {item.quantity}
                           </p>
                           <p className="text-sm font-medium">
-                            $
-                            {(
+                            {formatPrice(
                               (item.product?.price || 0) * item.quantity
-                            ).toFixed(2)}
+                            )}
                           </p>
                         </div>
                       </div>
@@ -344,17 +344,17 @@ const Checkout = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal</span>
-                      <span>${subtotal.toFixed(2)}</span>
+                      <span>{formatPrice(subtotal)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Shipping</span>
                       <span>
-                        {shippingCost === 0 ? "Free" : `$${shippingCost.toFixed(2)}`}
+                        {shippingCost === 0 ? "Free" : formatPrice(shippingCost)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Tax</span>
-                      <span>${tax.toFixed(2)}</span>
+                      <span className="text-muted-foreground">GST (18%)</span>
+                      <span>{formatPrice(tax)}</span>
                     </div>
                   </div>
 
@@ -362,7 +362,7 @@ const Checkout = () => {
 
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>{formatPrice(total)}</span>
                   </div>
 
                   <Button

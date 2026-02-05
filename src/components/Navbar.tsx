@@ -24,7 +24,7 @@ const Navbar = () => {
   const navLinks = [
     { name: "Shop", href: "/shop", isRoute: true },
     { name: "AI Analysis", href: "#ai-analysis", isRoute: false },
-    { name: "Ingredients", href: "#ingredients", isRoute: false },
+    { name: "Support", href: "/support", isRoute: true },
     { name: "About", href: "#about", isRoute: false },
   ];
 
