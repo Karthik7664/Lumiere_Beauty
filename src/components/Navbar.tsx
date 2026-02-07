@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Sparkles, User, LogOut, BarChart3, Heart, Package } from "lucide-react";
+import { Menu, X, Sparkles, User, LogOut, BarChart3, Heart, Package, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useAdminRole } from "@/hooks/useAdminRole";
 import AuthModal from "@/components/AuthModal";
 import CartDrawer from "@/components/cart/CartDrawer";
 import {
@@ -19,6 +20,7 @@ const Navbar = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { items: wishlistItems } = useWishlist();
+  const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
 
   const navLinks = [
@@ -86,6 +88,12 @@ const Navbar = () => {
                       <Package className="w-4 h-4 mr-2" />
                       My Orders
                     </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem onClick={() => navigate("/admin")}>
+                        <Shield className="w-4 h-4 mr-2" />
+                        Admin Panel
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="w-4 h-4 mr-2" />
@@ -185,6 +193,15 @@ const Navbar = () => {
                     >
                       Wishlist ({wishlistItems.length})
                     </Link>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Admin Panel
+                      </Link>
+                    )}
                   </>
                 )}
                 <div className="flex gap-4 mt-4">
