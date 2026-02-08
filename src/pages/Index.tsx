@@ -14,7 +14,9 @@ const Index = () => {
       <Navbar />
       <Hero />
       <FeaturedCarousel />
-      <AIAnalysis />
+      <div id="ai-analysis">
+        <AIAnalysis />
+      </div>
       <ProductGrid />
       <Features />
       <Newsletter />
