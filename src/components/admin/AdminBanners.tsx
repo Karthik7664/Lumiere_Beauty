@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Loader2, Tag } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Tag, Upload, Image as ImageIcon, X } from "lucide-react";
 
 interface BannerFormData {
   title: string;
@@ -35,6 +35,7 @@ interface BannerFormData {
   is_active: boolean;
   start_date: string | null;
   end_date: string | null;
+  image_url: string | null;
 }
 
 const emptyBanner: BannerFormData = {
@@ -47,14 +48,47 @@ const emptyBanner: BannerFormData = {
   is_active: true,
   start_date: null,
   end_date: null,
+  image_url: null,
 };
 
 const AdminBanners = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<BannerFormData>(emptyBanner);
+  const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('banner-images')
+      .upload(fileName, file);
+
+    if (uploadError) {
+      toast({ title: "Upload failed", description: uploadError.message, variant: "destructive" });
+      setUploading(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('banner-images')
+      .getPublicUrl(fileName);
+
+    setFormData({ ...formData, image_url: urlData.publicUrl });
+    setUploading(false);
+    toast({ title: "Image uploaded successfully" });
+  };
+
+  const removeImage = () => {
+    setFormData({ ...formData, image_url: null });
+  };
 
   const { data: banners, isLoading } = useQuery({
     queryKey: ["admin-banners"],
@@ -118,7 +152,7 @@ const AdminBanners = () => {
     setIsOpen(false);
   };
 
-  const handleEdit = (banner: typeof banners[0]) => {
+  const handleEdit = (banner: NonNullable<typeof banners>[0]) => {
     setFormData({
       title: banner.title,
       subtitle: banner.subtitle,
@@ -129,6 +163,7 @@ const AdminBanners = () => {
       is_active: banner.is_active,
       start_date: banner.start_date,
       end_date: banner.end_date,
+      image_url: banner.image_url,
     });
     setEditingId(banner.id);
     setIsOpen(true);
@@ -231,6 +266,51 @@ const AdminBanners = () => {
                 </div>
               </div>
 
+              {/* Image Upload */}
+              <div>
+                <Label>Banner Image (optional)</Label>
+                {formData.image_url ? (
+                  <div className="mt-2 relative">
+                    <img 
+                      src={formData.image_url} 
+                      alt="Banner preview" 
+                      className="w-full h-32 object-cover rounded-lg border"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2 h-6 w-6"
+                      onClick={removeImage}
+                    >
+                      <X className="w-3 h-3" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="mt-2">
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        {uploading ? (
+                          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                        ) : (
+                          <>
+                            <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+                            <p className="text-sm text-muted-foreground">Click to upload image</p>
+                          </>
+                        )}
+                      </div>
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                      />
+                    </label>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <Label htmlFor="background_color">Background Color (optional)</Label>
                 <Input
@@ -272,6 +352,7 @@ const AdminBanners = () => {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Image</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead>Discount</TableHead>
                 <TableHead>CTA</TableHead>
@@ -282,6 +363,19 @@ const AdminBanners = () => {
             <TableBody>
               {banners?.map((banner) => (
                 <TableRow key={banner.id}>
+                  <TableCell>
+                    {banner.image_url ? (
+                      <img 
+                        src={banner.image_url} 
+                        alt={banner.title}
+                        className="w-16 h-10 object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-16 h-10 bg-muted rounded flex items-center justify-center">
+                        <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <div>
                       <p className="font-medium">{banner.title}</p>
@@ -331,7 +425,7 @@ const AdminBanners = () => {
               ))}
               {banners?.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     <Tag className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
                     <p className="text-muted-foreground">No banners yet</p>
                   </TableCell>

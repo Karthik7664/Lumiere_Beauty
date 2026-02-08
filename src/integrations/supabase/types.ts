@@ -288,6 +288,7 @@ export type Database = {
           discount_text: string | null
           end_date: string | null
           id: string
+          image_url: string | null
           is_active: boolean
           start_date: string | null
           subtitle: string | null
@@ -302,6 +303,7 @@ export type Database = {
           discount_text?: string | null
           end_date?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           start_date?: string | null
           subtitle?: string | null
@@ -316,6 +318,7 @@ export type Database = {
           discount_text?: string | null
           end_date?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           start_date?: string | null
           subtitle?: string | null
