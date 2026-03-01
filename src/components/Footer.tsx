@@ -1,26 +1,18 @@
+import { Link } from "react-router-dom";
 import { Sparkles, Instagram, Twitter, Facebook, Youtube } from "lucide-react";
 
 const footerLinks = {
   shop: [
-    { name: "All Products", href: "#" },
-    { name: "Serums", href: "#" },
-    { name: "Moisturizers", href: "#" },
-    { name: "Cleansers", href: "#" },
-    { name: "Gift Sets", href: "#" },
-  ],
-  company: [
-    { name: "About Us", href: "#" },
-    { name: "Our Story", href: "#" },
-    { name: "Ingredients", href: "#" },
-    { name: "Sustainability", href: "#" },
-    { name: "Careers", href: "#" },
+    { name: "All Products", href: "/shop" },
+    { name: "Serums", href: "/shop" },
+    { name: "Moisturizers", href: "/shop" },
+    { name: "Gift Sets", href: "/shop" },
   ],
   support: [
-    { name: "Contact Us", href: "#" },
-    { name: "FAQs", href: "#" },
-    { name: "Shipping", href: "#" },
-    { name: "Returns", href: "#" },
-    { name: "Track Order", href: "#" },
+    { name: "Contact Us", href: "/support" },
+    { name: "FAQs", href: "/support" },
+    { name: "Shipping & Returns", href: "/support" },
+    { name: "Track Order", href: "/orders" },
   ],
 };
 
@@ -33,22 +25,21 @@ const socialLinks = [
 
 const Footer = () => {
   return (
-    <footer id="about" className="bg-foreground text-background">
+    <footer className="bg-foreground text-background">
       <div className="container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <a href="/" className="flex items-center gap-2 mb-6">
+            <Link to="/" className="flex items-center gap-2 mb-6">
               <Sparkles className="w-8 h-8 text-primary" />
               <span className="text-2xl font-serif font-bold">
                 Lumière<span className="text-primary">Beauty</span>
               </span>
-            </a>
+            </Link>
             <p className="text-background/70 mb-6 max-w-sm leading-relaxed">
               Revolutionizing skincare with AI technology. Personalized beauty 
               routines backed by science, designed for your unique skin.
             </p>
-            {/* Social Links */}
             <div className="flex gap-4">
               {socialLinks.map((social) => (
                 <a
@@ -69,29 +60,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.shop.map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="text-background/70 hover:text-primary transition-colors"
                   >
                     {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company Links */}
-          <div>
-            <h4 className="font-semibold text-lg mb-4">Company</h4>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-background/70 hover:text-primary transition-colors"
-                  >
-                    {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -103,12 +77,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {footerLinks.support.map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="text-background/70 hover:text-primary transition-colors"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -126,9 +100,6 @@ const Footer = () => {
             </a>
             <a href="#" className="text-background/50 hover:text-background transition-colors">
               Terms of Service
-            </a>
-            <a href="#" className="text-background/50 hover:text-background transition-colors">
-              Cookie Policy
             </a>
           </div>
         </div>
