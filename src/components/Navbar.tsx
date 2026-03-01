@@ -7,6 +7,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useAdminRole } from "@/hooks/useAdminRole";
 import AuthModal from "@/components/AuthModal";
 import CartDrawer from "@/components/cart/CartDrawer";
+import SkinAnalysisModal from "@/components/SkinAnalysisModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,17 +19,11 @@ import {
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isSkinModalOpen, setIsSkinModalOpen] = useState(false);
   const { user, signOut } = useAuth();
   const { items: wishlistItems } = useWishlist();
   const { isAdmin } = useAdminRole();
   const navigate = useNavigate();
-
-  const navLinks = [
-    { name: "Shop", href: "/shop", isRoute: true },
-    { name: "AI Analysis", href: "/#ai-analysis", isRoute: true },
-    { name: "Support", href: "/support", isRoute: true },
-    { name: "About", href: "/#about", isRoute: true },
-  ];
 
   const handleSignOut = async () => {
     await signOut();
@@ -49,25 +44,24 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
-              {navLinks.map((link) =>
-                link.isRoute ? (
-                  <Link
-                    key={link.name}
-                    to={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
-                  >
-                    {link.name}
-                  </Link>
-                ) : (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
-                  >
-                    {link.name}
-                  </a>
-                )
-              )}
+              <Link
+                to="/shop"
+                className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+              >
+                Shop
+              </Link>
+              <button
+                onClick={() => setIsSkinModalOpen(true)}
+                className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium bg-transparent border-none cursor-pointer"
+              >
+                AI Analysis
+              </button>
+              <Link
+                to="/support"
+                className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+              >
+                Support
+              </Link>
             </div>
 
             {/* Right Actions */}
@@ -149,27 +143,26 @@ const Navbar = () => {
           {isMenuOpen && (
             <div className="md:hidden mt-4 pb-4 border-t border-border pt-4">
               <div className="flex flex-col gap-4">
-                {navLinks.map((link) =>
-                  link.isRoute ? (
-                    <Link
-                      key={link.name}
-                      to={link.href}
-                      className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {link.name}
-                    </Link>
-                  ) : (
-                    <a
-                      key={link.name}
-                      href={link.href}
-                      className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {link.name}
-                    </a>
-                  )
-                )}
+                <Link
+                  to="/shop"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Shop
+                </Link>
+                <button
+                  onClick={() => { setIsSkinModalOpen(true); setIsMenuOpen(false); }}
+                  className="text-left text-muted-foreground hover:text-primary transition-colors duration-300 font-medium bg-transparent border-none cursor-pointer p-0"
+                >
+                  AI Analysis
+                </button>
+                <Link
+                  to="/support"
+                  className="text-muted-foreground hover:text-primary transition-colors duration-300 font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Support
+                </Link>
                 {user && (
                   <>
                     <Link
@@ -232,6 +225,7 @@ const Navbar = () => {
       </nav>
       
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <SkinAnalysisModal isOpen={isSkinModalOpen} onClose={() => setIsSkinModalOpen(false)} />
     </>
   );
 };
