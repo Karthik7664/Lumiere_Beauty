@@ -7,6 +7,8 @@ import ProductGrid from "@/components/products/ProductGrid";
 import Features from "@/components/Features";
 import Newsletter from "@/components/Newsletter";
 import Footer from "@/components/Footer";
+import FloatingAIButton from "@/components/FloatingAIButton";
+
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
@@ -19,6 +21,7 @@ const Index = () => {
       <Features />
       <Newsletter />
       <Footer />
+      <FloatingAIButton />
     </div>
   );
 };

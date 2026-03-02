@@ -18,7 +18,11 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { supabase } from "@/integrations/supabase/client";
+import { formatPrice } from "@/lib/currency";
+import { Link } from "react-router-dom";
 import product1 from "@/assets/product-1.jpg";
 import product2 from "@/assets/product-2.jpg";
 import product3 from "@/assets/product-3.jpg";
@@ -64,6 +68,61 @@ interface SkinAnalysisModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+const RecommendedProductsGrid = ({ products, productImages }: { products: RecommendedProduct[]; productImages: Record<number, string> }) => {
+  const { addToCart } = useCart();
+  const { toggleWishlist } = useWishlist();
+
+  return (
+    <div>
+      <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+        <ShoppingBag className="w-5 h-5 text-primary" />
+        Recommended Products for You
+      </h4>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {products.map((product) => (
+          <Card key={product.id} className="overflow-hidden group hover:shadow-lg transition-shadow">
+            <div className="aspect-square overflow-hidden">
+              <img 
+                src={productImages[product.id]} 
+                alt={product.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div className="p-3">
+              <p className="text-xs text-primary font-medium uppercase">{product.brand}</p>
+              <p className="text-sm font-semibold text-foreground line-clamp-2">{product.name}</p>
+              <p className="text-sm font-bold text-foreground mt-1">{formatPrice(product.price)}</p>
+              <div className="flex gap-1 mt-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 h-7 text-xs"
+                  onClick={() => {
+                    toast({ title: "Product recommendation", description: "Visit our shop to add this to cart!" });
+                  }}
+                >
+                  <ShoppingBag className="w-3 h-3 mr-1" />
+                  Shop
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 w-7 p-0"
+                  onClick={() => {
+                    toast({ title: "Visit shop", description: "Browse our full collection to add to wishlist!" });
+                  }}
+                >
+                  <Heart className="w-3 h-3" />
+                </Button>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const SkinAnalysisModal = ({ isOpen, onClose }: SkinAnalysisModalProps) => {
   const [step, setStep] = useState<"upload" | "analyzing" | "results">("upload");
@@ -400,30 +459,7 @@ const SkinAnalysisModal = ({ isOpen, onClose }: SkinAnalysisModalProps) => {
 
             {/* Product Recommendations */}
             {recommendedProducts.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-primary" />
-                  Recommended Products for You
-                </h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {recommendedProducts.map((product) => (
-                    <Card key={product.id} className="overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
-                      <div className="aspect-square overflow-hidden">
-                        <img 
-                          src={productImages[product.id]} 
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="p-3">
-                        <p className="text-xs text-primary font-medium uppercase">{product.brand}</p>
-                        <p className="text-sm font-semibold text-foreground line-clamp-2">{product.name}</p>
-                        <p className="text-sm font-bold text-foreground mt-1">${product.price}</p>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
+              <RecommendedProductsGrid products={recommendedProducts} productImages={productImages} />
             )}
 
             {/* Actions */}

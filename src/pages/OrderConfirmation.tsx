@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { formatPrice } from "@/lib/currency";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -183,24 +184,24 @@ const OrderConfirmation = () => {
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>${Number(order.subtotal).toFixed(2)}</span>
+                  <span>{formatPrice(Number(order.subtotal))}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Shipping</span>
                   <span>
                     {Number(order.shipping_cost) === 0
                       ? "Free"
-                      : `$${Number(order.shipping_cost).toFixed(2)}`}
+                      : formatPrice(Number(order.shipping_cost))}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Tax</span>
-                  <span>${Number(order.tax).toFixed(2)}</span>
+                  <span>{formatPrice(Number(order.tax))}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold">
                   <span>Total</span>
-                  <span>${Number(order.total).toFixed(2)}</span>
+                  <span>{formatPrice(Number(order.total))}</span>
                 </div>
               </CardContent>
             </Card>
@@ -225,7 +226,7 @@ const OrderConfirmation = () => {
                       Quantity: {item.quantity}
                     </p>
                     <p className="font-medium">
-                      ${(Number(item.price) * item.quantity).toFixed(2)}
+                      {formatPrice(Number(item.price) * item.quantity)}
                     </p>
                   </div>
                 </div>

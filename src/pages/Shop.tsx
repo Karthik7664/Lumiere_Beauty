@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useProducts, useCategories } from "@/hooks/useProducts";
 import ProductCard from "@/components/products/ProductCard";
 import Navbar from "@/components/Navbar";
+import FloatingAIButton from "@/components/FloatingAIButton";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -380,6 +381,7 @@ const Shop = () => {
       </section>
 
       <Footer />
+      <FloatingAIButton />
     </div>
   );
 };

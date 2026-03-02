@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
+import { formatPrice } from "@/lib/currency";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -126,7 +127,7 @@ const Orders = () => {
                           {order.status}
                         </Badge>
                         <span className="font-bold">
-                          ${Number(order.total).toFixed(2)}
+                          {formatPrice(Number(order.total))}
                         </span>
                       </div>
                     </div>
