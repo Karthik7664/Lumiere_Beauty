@@ -22,26 +22,6 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/lib/currency";
-import { Link } from "react-router-dom";
-import product1 from "@/assets/product-1.jpg";
-import product2 from "@/assets/product-2.jpg";
-import product3 from "@/assets/product-3.jpg";
-import product4 from "@/assets/product-4.jpg";
-import product5 from "@/assets/product-5.jpg";
-import product6 from "@/assets/product-6.jpg";
-import product7 from "@/assets/product-7.jpg";
-import product8 from "@/assets/product-8.jpg";
-
-const productImages: Record<number, string> = {
-  1: product1,
-  2: product2,
-  3: product3,
-  4: product4,
-  5: product5,
-  6: product6,
-  7: product7,
-  8: product8,
-};
 
 interface SkinAnalysis {
   overallScore: number;
@@ -58,10 +38,12 @@ interface SkinAnalysis {
 }
 
 interface RecommendedProduct {
-  id: number;
+  id: string;
+  slug: string;
   name: string;
   brand: string;
   price: number;
+  image_url: string;
 }
 
 interface SkinAnalysisModalProps {
@@ -69,9 +51,41 @@ interface SkinAnalysisModalProps {
   onClose: () => void;
 }
 
-const RecommendedProductsGrid = ({ products, productImages }: { products: RecommendedProduct[]; productImages: Record<number, string> }) => {
+const RecommendedProductsGrid = ({ products }: { products: RecommendedProduct[] }) => {
+  const { user } = useAuth();
   const { addToCart } = useCart();
-  const { toggleWishlist } = useWishlist();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const [processingId, setProcessingId] = useState<string | null>(null);
+
+  const handleAddToCart = async (productId: string) => {
+    if (!user) {
+      toast({ title: "Please sign in", description: "Sign in to add recommended products to cart.", variant: "destructive" });
+      return;
+    }
+
+    setProcessingId(productId);
+    try {
+      await addToCart(productId);
+      toast({ title: "Added to cart", description: "Recommended product added successfully." });
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
+  const handleWishlistToggle = async (productId: string) => {
+    if (!user) {
+      toast({ title: "Please sign in", description: "Sign in to save recommended products to wishlist.", variant: "destructive" });
+      return;
+    }
+
+    setProcessingId(productId);
+    try {
+      await toggleWishlist(productId);
+      toast({ title: "Wishlist updated", description: "Recommendation saved successfully." });
+    } finally {
+      setProcessingId(null);
+    }
+  };
 
   return (
     <div>
@@ -83,10 +97,11 @@ const RecommendedProductsGrid = ({ products, productImages }: { products: Recomm
         {products.map((product) => (
           <Card key={product.id} className="overflow-hidden group hover:shadow-lg transition-shadow">
             <div className="aspect-square overflow-hidden">
-              <img 
-                src={productImages[product.id]} 
+              <img
+                src={product.image_url || "/placeholder.svg"}
                 alt={product.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
               />
             </div>
             <div className="p-3">
@@ -98,20 +113,18 @@ const RecommendedProductsGrid = ({ products, productImages }: { products: Recomm
                   size="sm"
                   variant="outline"
                   className="flex-1 h-7 text-xs"
-                  onClick={() => {
-                    toast({ title: "Product recommendation", description: "Visit our shop to add this to cart!" });
-                  }}
+                  onClick={() => handleAddToCart(product.id)}
+                  disabled={processingId === product.id}
                 >
                   <ShoppingBag className="w-3 h-3 mr-1" />
-                  Shop
+                  Add
                 </Button>
                 <Button
                   size="sm"
-                  variant="ghost"
+                  variant={isInWishlist(product.id) ? "default" : "ghost"}
                   className="h-7 w-7 p-0"
-                  onClick={() => {
-                    toast({ title: "Visit shop", description: "Browse our full collection to add to wishlist!" });
-                  }}
+                  onClick={() => handleWishlistToggle(product.id)}
+                  disabled={processingId === product.id}
                 >
                   <Heart className="w-3 h-3" />
                 </Button>
@@ -169,27 +182,18 @@ const SkinAnalysisModal = ({ isOpen, onClose }: SkinAnalysisModalProps) => {
     setStep("analyzing");
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-skin`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({ imageBase64 }),
-        }
-      );
+      const { data, error } = await supabase.functions.invoke("analyze-skin", {
+        body: { imageBase64 },
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Analysis failed");
+      if (error) {
+        throw error;
       }
 
-      const data = await response.json();
       setAnalysis(data.analysis);
-      setRecommendedProducts(data.recommendedProducts);
+      setRecommendedProducts(data.recommendedProducts || []);
       setStep("results");
+
     } catch (error) {
       console.error("Analysis error:", error);
       toast({
@@ -459,7 +463,7 @@ const SkinAnalysisModal = ({ isOpen, onClose }: SkinAnalysisModalProps) => {
 
             {/* Product Recommendations */}
             {recommendedProducts.length > 0 && (
-              <RecommendedProductsGrid products={recommendedProducts} productImages={productImages} />
+              <RecommendedProductsGrid products={recommendedProducts} />
             )}
 
             {/* Actions */}
