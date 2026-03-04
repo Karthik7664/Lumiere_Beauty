@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Heart, ShoppingBag, Trash2, ChevronLeft, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { formatPrice } from "@/lib/currency";
-
 const Wishlist = () => {
   const { user } = useAuth();
   const { items, removeFromWishlist, loading } = useWishlist();
