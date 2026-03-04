@@ -17,10 +17,10 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Youtube, href: "#", label: "YouTube" },
+  { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
+  { icon: Twitter, href: "https://x.com", label: "Twitter" },
+  { icon: Facebook, href: "https://facebook.com", label: "Facebook" },
+  { icon: Youtube, href: "https://youtube.com", label: "YouTube" },
 ];
 
 const Footer = () => {
@@ -33,11 +33,11 @@ const Footer = () => {
             <Link to="/" className="flex items-center gap-2 mb-6">
               <Sparkles className="w-8 h-8 text-primary" />
               <span className="text-2xl font-serif font-bold">
-                Lumière<span className="text-primary">Beauty</span>
+                Lumiere<span className="text-primary">Beauty</span>
               </span>
             </Link>
             <p className="text-background/70 mb-6 max-w-sm leading-relaxed">
-              Revolutionizing skincare with AI technology. Personalized beauty 
+              Revolutionizing skincare with AI technology. Personalized beauty
               routines backed by science, designed for your unique skin.
             </p>
             <div className="flex gap-4">
@@ -45,6 +45,8 @@ const Footer = () => {
                 <a
                   key={social.label}
                   href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
                   aria-label={social.label}
                   className="w-10 h-10 rounded-full bg-background/10 flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
                 >
@@ -92,15 +94,15 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-background/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-background/50 text-sm">
-            © 2026 Lumière Beauty. All rights reserved.
+            © 2026 Lumiere Beauty. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="text-background/50 hover:text-background transition-colors">
+            <Link to="/support" className="text-background/50 hover:text-background transition-colors">
               Privacy Policy
-            </a>
-            <a href="#" className="text-background/50 hover:text-background transition-colors">
+            </Link>
+            <Link to="/support" className="text-background/50 hover:text-background transition-colors">
               Terms of Service
-            </a>
+            </Link>
           </div>
         </div>
       </div>
