@@ -1,20 +1,73 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const products = [
-  { id: 1, name: "Radiance Revival Serum", brand: "Lumière Luxe", price: 89, concerns: ["aging", "wrinkles", "dullness"] },
-  { id: 2, name: "Hydra-Glow Moisturizer", brand: "AquaVeil", price: 65, concerns: ["dryness", "dehydration", "flakiness"] },
-  { id: 3, name: "Vitamin C Brightening Essence", brand: "CitraGlow", price: 75, concerns: ["dark spots", "uneven tone", "dullness"] },
-  { id: 4, name: "Aqua-Boost Hydrating Serum", brand: "DeepSea Labs", price: 79, concerns: ["dryness", "dehydration", "fine lines"] },
-  { id: 5, name: "Retinol Night Renewal", brand: "NightLux Pro", price: 125, concerns: ["aging", "wrinkles", "texture"] },
-  { id: 6, name: "Pore Minimizing Serum", brand: "ClearSkin Co.", price: 55, concerns: ["oily", "pores", "acne"] },
-  { id: 7, name: "Green Tea Face Mist", brand: "Botanical Bliss", price: 38, concerns: ["sensitive", "redness", "irritation"] },
-  { id: 8, name: "Collagen Eye Cream", brand: "Éclat Paris", price: 95, concerns: ["dark circles", "puffiness", "aging"] },
-];
+interface CatalogProduct {
+  id: string;
+  slug: string;
+  name: string;
+  brand: string;
+  price: number;
+  image_url: string;
+  description: string;
+  ingredients: string[] | null;
+  how_to_use: string | null;
+  in_stock: boolean | null;
+}
+
+const concernKeywords: Record<string, string[]> = {
+  aging: ["aging", "anti aging", "retinol", "peptide", "collagen"],
+  wrinkles: ["wrinkles", "fine lines", "retinol", "peptide"],
+  dullness: ["dullness", "radiance", "brightening", "vitamin c", "glow"],
+  "dark spots": ["dark spots", "pigmentation", "brightening", "vitamin c"],
+  "uneven tone": ["uneven tone", "tone", "brightening", "niacinamide"],
+  dryness: ["dryness", "hydration", "moisturizer", "hyaluronic", "barrier"],
+  dehydration: ["dehydration", "hydrating", "hyaluronic", "moisturizer"],
+  oily: ["oily", "oil", "balancing", "niacinamide"],
+  pores: ["pores", "pore", "niacinamide", "refining"],
+  acne: ["acne", "blemish", "clarifying", "salicylic"],
+  sensitive: ["sensitive", "soothing", "barrier", "calming"],
+  redness: ["redness", "calming", "soothing", "sensitive"],
+  irritation: ["irritation", "calming", "sensitive", "barrier"],
+  "dark circles": ["dark circles", "eye", "brightening"],
+  puffiness: ["puffiness", "eye", "de-puff"],
+  texture: ["texture", "smoothing", "resurfacing", "aha"],
+  flakiness: ["flakiness", "dry", "barrier", "hydration"],
+};
+
+const scoreProduct = (product: CatalogProduct, concerns: string[]) => {
+  const searchableText = [
+    product.name,
+    product.description,
+    product.how_to_use ?? "",
+    ...(product.ingredients ?? []),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  let score = 0;
+
+  concerns.forEach((concern) => {
+    const normalizedConcern = concern.toLowerCase();
+    const keywords = concernKeywords[normalizedConcern] ?? [normalizedConcern];
+
+    keywords.forEach((keyword) => {
+      if (searchableText.includes(keyword)) {
+        score += 2;
+      }
+    });
+
+    if (searchableText.includes(normalizedConcern)) {
+      score += 3;
+    }
+  });
+
+  return score;
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -23,12 +76,12 @@ serve(async (req) => {
 
   try {
     const { imageBase64 } = await req.json();
-    
+
     if (!imageBase64) {
-      return new Response(
-        JSON.stringify({ error: "No image provided" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "No image provided" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -70,13 +123,16 @@ IMPORTANT: Respond ONLY with the JSON object, no additional text or markdown.`;
           {
             role: "user",
             content: [
-              { type: "text", text: "Please analyze this skin image and provide a detailed assessment." },
+              {
+                type: "text",
+                text: "Please analyze this skin image and provide a detailed assessment.",
+              },
               {
                 type: "image_url",
-                image_url: { url: imageBase64 }
-              }
-            ]
-          }
+                image_url: { url: imageBase64 },
+              },
+            ],
+          },
         ],
       }),
     });
@@ -85,13 +141,13 @@ IMPORTANT: Respond ONLY with the JSON object, no additional text or markdown.`;
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
       if (response.status === 402) {
         return new Response(
           JSON.stringify({ error: "AI credits depleted. Please add more credits." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
       const errorText = await response.text();
@@ -106,40 +162,66 @@ IMPORTANT: Respond ONLY with the JSON object, no additional text or markdown.`;
       throw new Error("No response from AI");
     }
 
-    // Parse the JSON response
     let analysis;
     try {
-      // Clean potential markdown formatting
-      const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const cleanedContent = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       analysis = JSON.parse(cleanedContent);
-    } catch (parseError) {
+    } catch {
       console.error("Failed to parse AI response:", content);
       throw new Error("Failed to parse AI response");
     }
 
-    // Match products based on concerns
-    const matchedProducts = products
-      .filter(product => 
-        product.concerns.some(concern => 
-          analysis.concerns.some((userConcern: string) => 
-            userConcern.toLowerCase().includes(concern) || concern.includes(userConcern.toLowerCase())
-          )
-        )
-      )
-      .slice(0, 4);
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error("Backend secrets are not configured");
+    }
+
+    const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const { data: catalogProducts, error: catalogError } = await adminClient
+      .from("products")
+      .select("id, slug, name, brand, price, image_url, description, ingredients, how_to_use, in_stock")
+      .eq("in_stock", true);
+
+    if (catalogError) {
+      throw catalogError;
+    }
+
+    const rankedProducts = ((catalogProducts as CatalogProduct[]) ?? [])
+      .map((product) => ({
+        ...product,
+        relevanceScore: scoreProduct(product, analysis.concerns ?? []),
+      }))
+      .sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+    const recommendedProducts = rankedProducts
+      .filter((product) => product.relevanceScore > 0)
+      .slice(0, 8);
+
+    const fallbackProducts = rankedProducts.slice(0, 8);
 
     return new Response(
       JSON.stringify({
         analysis,
-        recommendedProducts: matchedProducts,
+        recommendedProducts: (recommendedProducts.length > 0 ? recommendedProducts : fallbackProducts).map(
+          ({ id, slug, name, brand, price, image_url }) => ({
+            id,
+            slug,
+            name,
+            brand,
+            price,
+            image_url,
+          }),
+        ),
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error) {
     console.error("Skin analysis error:", error);
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Analysis failed" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });

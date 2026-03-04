@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ShippingAddress } from "@/types/ecommerce";
 import { ArrowLeft, CreditCard, Lock, Package } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { formatPrice } from "@/lib/currency";
@@ -21,6 +22,7 @@ const Checkout = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi" | "card">("cod");
 
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
     firstName: "",
@@ -85,8 +87,8 @@ const Checkout = () => {
           tax: tax,
           total: total,
           shipping_address: shippingAddress as unknown as Record<string, unknown>,
-          payment_method: "demo",
-          payment_status: "paid",
+          payment_method: paymentMethod,
+          payment_status: paymentMethod === "cod" ? "pending" : "paid",
         } as never)
         .select()
         .single();
@@ -289,16 +291,44 @@ const Checkout = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CreditCard className="h-5 w-5" />
-                    Payment (Demo Mode)
+                    Payment Method
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="bg-muted/50 rounded-lg p-6 text-center">
-                    <Lock className="h-8 w-8 text-primary mx-auto mb-3" />
-                    <p className="font-medium mb-2">Demo Checkout</p>
-                    <p className="text-sm text-muted-foreground">
-                      This is a demo checkout. COD (Cash on Delivery) and UPI payments available.
-                      Click "Place Order" to simulate a successful order.
+                <CardContent className="space-y-4">
+                  <RadioGroup
+                    value={paymentMethod}
+                    onValueChange={(value) => setPaymentMethod(value as "cod" | "upi" | "card")}
+                    className="space-y-3"
+                  >
+                    <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
+                      <RadioGroupItem value="cod" id="cod" />
+                      <div>
+                        <p className="font-medium">Cash on Delivery (COD)</p>
+                        <p className="text-sm text-muted-foreground">Pay when your order arrives.</p>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
+                      <RadioGroupItem value="upi" id="upi" />
+                      <div>
+                        <p className="font-medium">UPI</p>
+                        <p className="text-sm text-muted-foreground">Instant payment confirmation in demo mode.</p>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
+                      <RadioGroupItem value="card" id="card" />
+                      <div>
+                        <p className="font-medium">Credit / Debit Card</p>
+                        <p className="text-sm text-muted-foreground">Secure card payment simulation.</p>
+                      </div>
+                    </label>
+                  </RadioGroup>
+
+                  <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground flex items-start gap-2">
+                    <Lock className="h-4 w-4 mt-0.5 text-primary" />
+                    <p>
+                      Demo checkout is active. Your selected method is saved with this order for testing.
                     </p>
                   </div>
                 </CardContent>

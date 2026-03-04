@@ -19,7 +19,7 @@ const Support = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Namaste! 🙏 Welcome to Lumière Beauty support. I'm your AI beauty assistant. How can I help you today? I can assist with product recommendations, order inquiries, skincare routines, and more!",
+      content: "Namaste! 🙏 Welcome to Lumiere Beauty support. I'm your AI beauty assistant. How can I help you today? I can assist with product recommendations, order inquiries, skincare routines, and more!",
     },
   ]);
   const [input, setInput] = useState("");
@@ -246,7 +246,7 @@ const Support = () => {
                     <a href="/orders">Track My Order</a>
                   </Button>
                   <Button variant="outline" className="w-full justify-start" asChild>
-                    <a href="/#ai-analysis">Skin Analysis</a>
+                    <a href="/">AI Skin Analysis</a>
                   </Button>
                 </CardContent>
               </Card>

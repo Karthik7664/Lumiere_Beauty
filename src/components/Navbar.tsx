@@ -38,7 +38,7 @@ const Navbar = () => {
             <Link to="/" className="flex items-center gap-2">
               <Sparkles className="w-8 h-8 text-primary" />
               <span className="text-2xl font-serif font-bold text-foreground">
-                Lumière<span className="text-primary">Beauty</span>
+                Lumiere<span className="text-primary">Beauty</span>
               </span>
             </Link>
 

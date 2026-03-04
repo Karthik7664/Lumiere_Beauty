@@ -81,7 +81,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl font-serif">
             <Sparkles className="w-6 h-6 text-primary" />
-            {tab === "login" ? "Welcome Back" : "Join Lumière"}
+            {tab === "login" ? "Welcome Back" : "Join Lumiere"}
           </DialogTitle>
         </DialogHeader>
 
