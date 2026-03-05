@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useProducts, useCategories } from "@/hooks/useProducts";
 import ProductCard from "@/components/products/ProductCard";
 import Navbar from "@/components/Navbar";
@@ -31,12 +32,25 @@ type SortOption = "newest" | "price-asc" | "price-desc" | "rating" | "name";
 const Shop = () => {
   const { data: products, isLoading: productsLoading } = useProducts();
   const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [gridCols, setGridCols] = useState<"3" | "4">("4");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
+
+  // Read category from URL query params
+  useEffect(() => {
+    const categorySlug = searchParams.get("category");
+    if (categorySlug && categories) {
+      const found = categories.find((c) => c.slug === categorySlug);
+      if (found) {
+        setSelectedCategory(found.id);
+        setCurrentPage(1);
+      }
+    }
+  }, [searchParams, categories]);
 
   // Get min/max prices from products
   const { minPrice, maxPrice } = useMemo(() => {
@@ -53,7 +67,6 @@ const Shop = () => {
 
     let filtered = [...products];
 
-    // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(
@@ -64,17 +77,14 @@ const Shop = () => {
       );
     }
 
-    // Filter by category
     if (selectedCategory !== "all") {
       filtered = filtered.filter((p) => p.category_id === selectedCategory);
     }
 
-    // Filter by price range
     filtered = filtered.filter(
       (p) => p.price >= priceRange[0] && p.price <= priceRange[1]
     );
 
-    // Sort products
     switch (sortBy) {
       case "price-asc":
         filtered.sort((a, b) => a.price - b.price);
@@ -99,14 +109,12 @@ const Shop = () => {
     return filtered;
   }, [products, selectedCategory, sortBy, searchQuery, priceRange]);
 
-  // Pagination calculations
   const totalPages = Math.ceil(filteredAndSortedProducts.length / PRODUCTS_PER_PAGE);
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
     return filteredAndSortedProducts.slice(startIndex, startIndex + PRODUCTS_PER_PAGE);
   }, [filteredAndSortedProducts, currentPage]);
 
-  // Reset to page 1 when filters change
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     setCurrentPage(1);
@@ -139,7 +147,6 @@ const Shop = () => {
     setCurrentPage(1);
   };
 
-  // Generate page numbers for pagination
   const getPageNumbers = () => {
     const pages: (number | "ellipsis")[] = [];
     if (totalPages <= 7) {
@@ -223,7 +230,6 @@ const Shop = () => {
 
           {/* Filter Bar */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-border">
-            {/* Category Filter */}
             <div className="flex flex-wrap items-center gap-2">
               <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
               <Button
@@ -245,7 +251,6 @@ const Shop = () => {
               ))}
             </div>
 
-            {/* Sort and Grid Controls */}
             <div className="flex items-center gap-4">
               <Select value={sortBy} onValueChange={(v) => handleSortChange(v as SortOption)}>
                 <SelectTrigger className="w-[180px]">
@@ -276,14 +281,12 @@ const Shop = () => {
             </div>
           </div>
 
-          {/* Results Count */}
           <p className="text-sm text-muted-foreground mb-6">
             Showing {paginatedProducts.length} of {filteredAndSortedProducts.length} product
             {filteredAndSortedProducts.length !== 1 ? "s" : ""}
             {totalPages > 1 && ` • Page ${currentPage} of ${totalPages}`}
           </p>
 
-          {/* Products Grid */}
           {isLoading ? (
             <div
               className={cn(
@@ -331,7 +334,6 @@ const Shop = () => {
                 ))}
               </div>
 
-              {/* Pagination */}
               {totalPages > 1 && (
                 <Pagination className="mt-12">
                   <PaginationContent>
