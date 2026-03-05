@@ -4,9 +4,9 @@ import { Sparkles, Instagram, Twitter, Facebook, Youtube } from "lucide-react";
 const footerLinks = {
   shop: [
     { name: "All Products", href: "/shop" },
-    { name: "Serums", href: "/shop" },
-    { name: "Moisturizers", href: "/shop" },
-    { name: "Gift Sets", href: "/shop" },
+    { name: "Serums", href: "/shop?category=serums" },
+    { name: "Moisturizers", href: "/shop?category=moisturizers" },
+    { name: "Gift Sets", href: "/shop?category=gift-sets" },
   ],
   support: [
     { name: "Contact Us", href: "/support" },
@@ -97,10 +97,10 @@ const Footer = () => {
             © 2026 Lumiere Beauty. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
-            <Link to="/support" className="text-background/50 hover:text-background transition-colors">
+            <Link to="/privacy-policy" className="text-background/50 hover:text-background transition-colors">
               Privacy Policy
             </Link>
-            <Link to="/support" className="text-background/50 hover:text-background transition-colors">
+            <Link to="/terms-of-service" className="text-background/50 hover:text-background transition-colors">
               Terms of Service
             </Link>
           </div>
