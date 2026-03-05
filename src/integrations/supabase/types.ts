@@ -395,6 +395,60 @@ export type Database = {
           },
         ]
       }
+      saved_addresses: {
+        Row: {
+          address: string
+          city: string
+          country: string
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          is_default: boolean | null
+          label: string | null
+          last_name: string
+          phone: string
+          state: string
+          updated_at: string
+          user_id: string
+          zip_code: string
+        }
+        Insert: {
+          address: string
+          city: string
+          country?: string
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          last_name: string
+          phone: string
+          state: string
+          updated_at?: string
+          user_id: string
+          zip_code: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          country?: string
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          last_name?: string
+          phone?: string
+          state?: string
+          updated_at?: string
+          user_id?: string
+          zip_code?: string
+        }
+        Relationships: []
+      }
       skin_analyses: {
         Row: {
           concerns: string[]
