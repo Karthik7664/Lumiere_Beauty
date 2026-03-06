@@ -9,11 +9,11 @@ const FloatingAIButton = () => {
 
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3" style={{ zIndex: 9999 }}>
         <Button
           variant="outline"
           size="icon"
-          className="h-12 w-12 rounded-full shadow-lg"
+          className="h-12 w-12 rounded-full shadow-lg bg-background border-border"
           asChild
         >
           <Link to="/support" aria-label="AI Shopping Assistant">

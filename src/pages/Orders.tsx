@@ -148,6 +148,17 @@ const Orders = () => {
                         </div>
                       )}
                     </div>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {items.map((item) => (
+                        <Link
+                          key={item.id}
+                          to={`/product/${item.product_id}`}
+                          className="text-sm text-primary hover:underline"
+                        >
+                          {item.product_name}
+                        </Link>
+                      ))}
+                    </div>
                     <div className="flex justify-between items-center">
                       <p className="text-sm text-muted-foreground">
                         {items.length} item{items.length !== 1 && "s"}
