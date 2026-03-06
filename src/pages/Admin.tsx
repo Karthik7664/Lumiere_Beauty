@@ -5,15 +5,17 @@ import { useAdminRole } from "@/hooks/useAdminRole";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Package, Tag, CreditCard, Settings } from "lucide-react";
+import { Loader2, Package, Tag, Settings, ShoppingCart, Users } from "lucide-react";
 import AdminProducts from "@/components/admin/AdminProducts";
 import AdminBanners from "@/components/admin/AdminBanners";
 import AdminSettings from "@/components/admin/AdminSettings";
+import AdminOrders from "@/components/admin/AdminOrders";
+import AdminUsers from "@/components/admin/AdminUsers";
 
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, loading: roleLoading } = useAdminRole();
-  const [activeTab, setActiveTab] = useState("products");
+  const [activeTab, setActiveTab] = useState("orders");
 
   if (authLoading || roleLoading) {
     return (
@@ -45,12 +47,20 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-serif font-bold mb-8">Admin Dashboard</h1>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-8">
+          <TabsList className="mb-8 flex-wrap">
+            <TabsTrigger value="orders" className="gap-2">
+              <ShoppingCart className="w-4 h-4" />
+              Orders
+            </TabsTrigger>
+            <TabsTrigger value="users" className="gap-2">
+              <Users className="w-4 h-4" />
+              Users
+            </TabsTrigger>
             <TabsTrigger value="products" className="gap-2">
               <Package className="w-4 h-4" />
               Products
@@ -64,6 +74,14 @@ const Admin = () => {
               Settings
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="orders">
+            <AdminOrders />
+          </TabsContent>
+
+          <TabsContent value="users">
+            <AdminUsers />
+          </TabsContent>
 
           <TabsContent value="products">
             <AdminProducts />
