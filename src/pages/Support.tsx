@@ -94,8 +94,8 @@ const Support = () => {
           <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Chat Section */}
             <div className="lg:col-span-2">
-              <Card className="h-[600px] flex flex-col">
-                <CardHeader className="border-b border-border">
+              <Card className="h-[600px] flex flex-col overflow-hidden">
+                <CardHeader className="border-b border-border flex-shrink-0">
                   <CardTitle className="flex items-center gap-2">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                       <Sparkles className="w-5 h-5 text-primary" />
@@ -106,8 +106,8 @@ const Support = () => {
                     </div>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 p-0 flex flex-col">
-                  <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
+                <CardContent className="flex-1 p-0 flex flex-col min-h-0">
+                  <div className="flex-1 overflow-y-auto p-4" ref={scrollAreaRef}>
                     <div className="space-y-4">
                       {messages.map((message, index) => (
                         <div
@@ -118,7 +118,7 @@ const Support = () => {
                           )}
                         >
                           {message.role === "assistant" && (
-                            <Avatar className="w-8 h-8 bg-primary/10">
+                            <Avatar className="w-8 h-8 flex-shrink-0 bg-primary/10">
                               <AvatarFallback className="bg-primary/10">
                                 <Bot className="w-4 h-4 text-primary" />
                               </AvatarFallback>
@@ -135,7 +135,7 @@ const Support = () => {
                             <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                           </div>
                           {message.role === "user" && (
-                            <Avatar className="w-8 h-8">
+                            <Avatar className="w-8 h-8 flex-shrink-0">
                               <AvatarFallback className="bg-muted">
                                 <User className="w-4 h-4" />
                               </AvatarFallback>
@@ -145,7 +145,7 @@ const Support = () => {
                       ))}
                       {isLoading && (
                         <div className="flex gap-3">
-                          <Avatar className="w-8 h-8 bg-primary/10">
+                          <Avatar className="w-8 h-8 flex-shrink-0 bg-primary/10">
                             <AvatarFallback className="bg-primary/10">
                               <Bot className="w-4 h-4 text-primary" />
                             </AvatarFallback>
@@ -160,8 +160,8 @@ const Support = () => {
                         </div>
                       )}
                     </div>
-                  </ScrollArea>
-                  <div className="p-4 border-t border-border">
+                  </div>
+                  <div className="p-4 border-t border-border flex-shrink-0">
                     <div className="flex gap-2">
                       <Input
                         ref={inputRef}
