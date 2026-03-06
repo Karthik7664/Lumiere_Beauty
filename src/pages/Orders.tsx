@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Package, ArrowRight, ChevronLeft } from "lucide-react";
 import { Order, OrderItem } from "@/types/ecommerce";
+import { Product } from "@/types/ecommerce";
 import { format } from "date-fns";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -50,6 +51,24 @@ const Orders = () => {
     },
     enabled: !!orders && orders.length > 0,
   });
+
+  // Fetch product slugs for linking
+  const productIds = [...new Set(allOrderItems?.map((i) => i.product_id) || [])];
+  const { data: productSlugs } = useQuery({
+    queryKey: ["product-slugs", productIds],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, slug")
+        .in("id", productIds);
+      if (error) throw error;
+      return data as Pick<Product, "id" | "slug">[];
+    },
+    enabled: productIds.length > 0,
+  });
+
+  const getSlug = (productId: string) =>
+    productSlugs?.find((p) => p.id === productId)?.slug || productId;
 
   const getOrderItems = (orderId: string) => {
     return allOrderItems?.filter((item) => item.order_id === orderId) || [];
@@ -152,7 +171,7 @@ const Orders = () => {
                       {items.map((item) => (
                         <Link
                           key={item.id}
-                          to={`/product/${item.product_id}`}
+                          to={`/product/${getSlug(item.product_id)}`}
                           className="text-sm text-primary hover:underline"
                         >
                           {item.product_name}
