@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ShippingAddress } from "@/types/ecommerce";
-import { ArrowLeft, CreditCard, Lock, Package, MapPin, Plus, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, CreditCard, Lock, Package, MapPin, Plus, Pencil, Trash2, QrCode, Smartphone } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -43,6 +43,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi" | "card">("cod");
+  const [upiId, setUpiId] = useState("");
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
     ...emptyAddress,
     email: user?.email || "",
@@ -345,19 +346,51 @@ const Checkout = () => {
                     </label>
                     <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
                       <RadioGroupItem value="upi" id="upi" />
-                      <div>
-                        <p className="font-medium">UPI</p>
-                        <p className="text-sm text-muted-foreground">Instant payment confirmation.</p>
+                      <div className="flex items-center gap-2">
+                        <Smartphone className="h-5 w-5 text-primary" />
+                        <div>
+                          <p className="font-medium">UPI Payment</p>
+                          <p className="text-sm text-muted-foreground">Pay via Google Pay, PhonePe, Paytm, etc.</p>
+                        </div>
                       </div>
                     </label>
                     <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
                       <RadioGroupItem value="card" id="card" />
                       <div>
                         <p className="font-medium">Credit / Debit Card</p>
-                        <p className="text-sm text-muted-foreground">Secure card payment.</p>
+                        <p className="text-sm text-muted-foreground">Secure card payment (demo mode).</p>
                       </div>
                     </label>
                   </RadioGroup>
+
+                  {/* UPI Payment Details */}
+                  {paymentMethod === "upi" && (
+                    <div className="space-y-4 border border-border rounded-lg p-4 bg-muted/30">
+                      <div>
+                        <Label htmlFor="upiId">Your UPI ID</Label>
+                        <Input
+                          id="upiId"
+                          placeholder="yourname@upi"
+                          value={upiId}
+                          onChange={(e) => setUpiId(e.target.value)}
+                          className="mt-1"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">e.g. 9876543210@paytm, name@oksbi</p>
+                      </div>
+                      <Separator />
+                      <div className="text-center space-y-3">
+                        <p className="text-sm font-medium">Or scan QR code to pay</p>
+                        <div className="inline-flex flex-col items-center gap-2 bg-background rounded-lg p-4 border border-border">
+                          <QrCode className="h-32 w-32 text-foreground" />
+                          <p className="text-xs text-muted-foreground">Scan with any UPI app</p>
+                          <p className="text-sm font-bold">{formatPrice(total)}</p>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Pay to: <span className="font-medium">lumierebeauty@upi</span>
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground flex items-start gap-2">
                     <Lock className="h-4 w-4 mt-0.5 text-primary" />
