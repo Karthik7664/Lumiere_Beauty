@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useProduct } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,7 @@ import { formatPrice } from "@/lib/currency";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const { data: product, isLoading, error } = useProduct(slug || "");
   const { addToCart, isInCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -82,14 +83,15 @@ const ProductDetail = () => {
       <Navbar />
 
       <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <Link
-          to="/"
-          className="inline-flex items-center text-muted-foreground hover:text-foreground mb-8"
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          onClick={() => navigate(-1)}
+          className="mb-8"
         >
           <ChevronLeft className="w-4 h-4 mr-1" />
-          Back to Products
-        </Link>
+          Back
+        </Button>
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Product Image */}
