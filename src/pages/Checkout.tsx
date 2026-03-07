@@ -339,30 +339,36 @@ const Checkout = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <RadioGroup value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as "cod" | "upi" | "card")} className="space-y-3">
-                    <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
-                      <RadioGroupItem value="cod" id="cod" />
-                      <div>
-                        <p className="font-medium">Cash on Delivery (COD)</p>
-                        <p className="text-sm text-muted-foreground">Pay when your order arrives.</p>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
-                      <RadioGroupItem value="upi" id="upi" />
-                      <div className="flex items-center gap-2">
-                        <Smartphone className="h-5 w-5 text-primary" />
+                    {(!paymentConfig || paymentConfig.accept_cod) && (
+                      <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
+                        <RadioGroupItem value="cod" id="cod" />
                         <div>
-                          <p className="font-medium">UPI Payment</p>
-                          <p className="text-sm text-muted-foreground">Pay via Google Pay, PhonePe, Paytm, etc.</p>
+                          <p className="font-medium">Cash on Delivery (COD)</p>
+                          <p className="text-sm text-muted-foreground">Pay when your order arrives.</p>
                         </div>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
-                      <RadioGroupItem value="card" id="card" />
-                      <div>
-                        <p className="font-medium">Credit / Debit Card</p>
-                        <p className="text-sm text-muted-foreground">Secure card payment (demo mode).</p>
-                      </div>
-                    </label>
+                      </label>
+                    )}
+                    {(!paymentConfig || paymentConfig.accept_upi) && (
+                      <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
+                        <RadioGroupItem value="upi" id="upi" />
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="h-5 w-5 text-primary" />
+                          <div>
+                            <p className="font-medium">UPI Payment</p>
+                            <p className="text-sm text-muted-foreground">Pay via Google Pay, PhonePe, Paytm, etc.</p>
+                          </div>
+                        </div>
+                      </label>
+                    )}
+                    {(!paymentConfig || paymentConfig.accept_card) && (
+                      <label className="flex items-center gap-3 rounded-lg border border-border p-4 cursor-pointer">
+                        <RadioGroupItem value="card" id="card" />
+                        <div>
+                          <p className="font-medium">Credit / Debit Card</p>
+                          <p className="text-sm text-muted-foreground">Secure card payment (demo mode).</p>
+                        </div>
+                      </label>
+                    )}
                   </RadioGroup>
 
                   {/* UPI Payment Details */}
