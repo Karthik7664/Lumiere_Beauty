@@ -390,12 +390,17 @@ const Checkout = () => {
                         <p className="text-sm font-medium">Or scan QR code to pay</p>
                         <div className="inline-flex flex-col items-center gap-2 bg-background rounded-lg p-4 border border-border">
                           <QrCode className="h-32 w-32 text-foreground" />
-                          <p className="text-xs text-muted-foreground">Scan with any UPI app</p>
+                         <p className="text-xs text-muted-foreground">Scan with any UPI app</p>
                           <p className="text-sm font-bold">{formatPrice(total)}</p>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          Pay to: <span className="font-medium">lumierebeauty@upi</span>
+                          Pay to: <span className="font-medium">{paymentConfig?.upi_id || "lumierebeauty@upi"}</span>
                         </p>
+                        {paymentConfig?.receiver_name && (
+                          <p className="text-xs text-muted-foreground">
+                            Receiver: <span className="font-medium">{paymentConfig.receiver_name}</span> • {paymentConfig.receiver_phone}
+                          </p>
+                        )}
                       </div>
                     </div>
                   )}
