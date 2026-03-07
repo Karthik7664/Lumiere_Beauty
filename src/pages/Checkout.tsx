@@ -16,6 +16,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { formatPrice } from "@/lib/currency";
 import { useSavedAddresses, useSaveAddress, useDeleteAddress, SavedAddress } from "@/hooks/useSavedAddresses";
+import { usePaymentSettings } from "@/hooks/usePaymentSettings";
 import {
   Dialog,
   DialogContent,
