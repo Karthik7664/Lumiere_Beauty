@@ -54,6 +54,7 @@ const Checkout = () => {
   const [addressLabel, setAddressLabel] = useState("Home");
 
   const { data: savedAddresses } = useSavedAddresses();
+  const { data: paymentConfig } = usePaymentSettings();
   const saveAddressMutation = useSaveAddress();
   const deleteAddressMutation = useDeleteAddress();
 
