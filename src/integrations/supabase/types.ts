@@ -199,6 +199,42 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_settings: {
+        Row: {
+          accept_card: boolean
+          accept_cod: boolean
+          accept_upi: boolean
+          created_at: string
+          id: string
+          receiver_name: string
+          receiver_phone: string
+          updated_at: string
+          upi_id: string
+        }
+        Insert: {
+          accept_card?: boolean
+          accept_cod?: boolean
+          accept_upi?: boolean
+          created_at?: string
+          id?: string
+          receiver_name?: string
+          receiver_phone?: string
+          updated_at?: string
+          upi_id?: string
+        }
+        Update: {
+          accept_card?: boolean
+          accept_cod?: boolean
+          accept_upi?: boolean
+          created_at?: string
+          id?: string
+          receiver_name?: string
+          receiver_phone?: string
+          updated_at?: string
+          upi_id?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           badge: string | null
