@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { resolveProductImage } from "@/lib/productImages";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,7 +99,7 @@ const RecommendedProductsGrid = ({ products }: { products: RecommendedProduct[] 
           <Card key={product.id} className="overflow-hidden group hover:shadow-lg transition-shadow">
             <div className="aspect-square overflow-hidden">
               <img
-                src={product.image_url || "/placeholder.svg"}
+                src={resolveProductImage(product.image_url)}
                 alt={product.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 loading="lazy"

@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { formatPrice } from "@/lib/currency";
+import { resolveProductImage } from "@/lib/productImages";
 import { useSavedAddresses, useSaveAddress, useDeleteAddress, SavedAddress } from "@/hooks/useSavedAddresses";
 import { usePaymentSettings } from "@/hooks/usePaymentSettings";
 import {
@@ -150,7 +151,7 @@ const Checkout = () => {
         order_id: order.id,
         product_id: item.product_id,
         product_name: item.product?.name || "Unknown Product",
-        product_image: item.product?.image_url || "/placeholder.svg",
+        product_image: resolveProductImage(item.product?.image_url || ""),
         price: item.product?.price || 0,
         quantity: item.quantity,
       }));
@@ -423,7 +424,7 @@ const Checkout = () => {
                   <div className="space-y-3">
                     {items.map((item) => (
                       <div key={item.id} className="flex gap-3">
-                        <img src={item.product?.image_url || "/placeholder.svg"} alt={item.product?.name} className="w-16 h-16 object-cover rounded" />
+                        <img src={resolveProductImage(item.product?.image_url || "")} alt={item.product?.name} className="w-16 h-16 object-cover rounded" />
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{item.product?.name}</p>
                           <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>

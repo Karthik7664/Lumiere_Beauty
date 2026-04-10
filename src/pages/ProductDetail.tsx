@@ -26,6 +26,7 @@ import ReviewForm from "@/components/reviews/ReviewForm";
 import ReviewList from "@/components/reviews/ReviewList";
 import ReviewSummary from "@/components/reviews/ReviewSummary";
 import { formatPrice } from "@/lib/currency";
+import { resolveProductImage } from "@/lib/productImages";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -97,7 +98,7 @@ const ProductDetail = () => {
           {/* Product Image */}
           <div className="relative">
             <img
-              src={product.image_url || "/placeholder.svg"}
+              src={resolveProductImage(product.image_url)}
               alt={product.name}
               className="w-full aspect-square object-cover rounded-lg"
             />

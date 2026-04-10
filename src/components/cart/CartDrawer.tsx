@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { formatPrice } from "@/lib/currency";
+import { resolveProductImage } from "@/lib/productImages";
 
 interface CartDrawerProps {
   trigger?: React.ReactNode;
@@ -61,7 +62,7 @@ const CartDrawer = ({ trigger }: CartDrawerProps) => {
                   className="flex gap-4 p-4 border rounded-lg bg-card"
                 >
                   <img
-                    src={item.product?.image_url || "/placeholder.svg"}
+                    src={resolveProductImage(item.product?.image_url || "")}
                     alt={item.product?.name}
                     className="w-20 h-20 object-cover rounded-md"
                   />
