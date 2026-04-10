@@ -8,6 +8,7 @@ import { Heart, ShoppingBag, Trash2, ChevronLeft, ArrowRight } from "lucide-reac
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { formatPrice } from "@/lib/currency";
+import { resolveProductImage } from "@/lib/productImages";
 const Wishlist = () => {
   const { user } = useAuth();
   const { items, removeFromWishlist, loading } = useWishlist();
@@ -57,7 +58,7 @@ const Wishlist = () => {
                 <Link to={`/product/${item.product?.slug}`}>
                   <div className="relative overflow-hidden bg-muted/30">
                     <img
-                      src={item.product?.image_url || "/placeholder.svg"}
+                      src={resolveProductImage(item.product?.image_url || "")}
                       alt={item.product?.name}
                       className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
                     />
