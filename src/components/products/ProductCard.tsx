@@ -38,7 +38,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <Link to={`/product/${product.slug}`} className="block">
         <div className="relative overflow-hidden bg-muted/30">
           <img
-            src={product.image_url || "/placeholder.svg"}
+            src={resolveProductImage(product.image_url)}
             alt={product.name}
             className="w-full aspect-square object-cover group-hover:scale-110 transition-transform duration-700"
           />
