@@ -98,7 +98,7 @@ const ProductDetail = () => {
           {/* Product Image */}
           <div className="relative">
             <img
-              src={product.image_url || "/placeholder.svg"}
+              src={resolveProductImage(product.image_url)}
               alt={product.name}
               className="w-full aspect-square object-cover rounded-lg"
             />
