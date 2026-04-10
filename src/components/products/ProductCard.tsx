@@ -8,6 +8,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/currency";
+import { resolveProductImage } from "@/lib/productImages";
 
 interface ProductCardProps {
   product: Product;
