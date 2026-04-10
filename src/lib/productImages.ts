@@ -19,6 +19,18 @@ import barrierCream from "@/assets/products/barrier-cream.jpg";
 import ahaToner from "@/assets/products/aha-toner.jpg";
 import sunscreen from "@/assets/products/sunscreen.jpg";
 import sleepingMask from "@/assets/products/sleeping-mask.jpg";
+import roseFacialOil from "@/assets/products/rose-facial-oil.jpg";
+import clayMask from "@/assets/products/clay-mask.jpg";
+import hyaluronicSerum from "@/assets/products/hyaluronic-serum.jpg";
+import overnightCream from "@/assets/products/overnight-cream.jpg";
+import teaTreeToner from "@/assets/products/tea-tree-toner.jpg";
+import peptideCream from "@/assets/products/peptide-cream.jpg";
+import bakuchiolSerum from "@/assets/products/bakuchiol-serum.jpg";
+import mineralSunscreen from "@/assets/products/mineral-sunscreen.jpg";
+import squalaneOil from "@/assets/products/squalane-oil.jpg";
+import foamCleanser from "@/assets/products/foam-cleanser.jpg";
+import turmericMask from "@/assets/products/turmeric-mask.jpg";
+import caffeineEye from "@/assets/products/caffeine-eye.jpg";
 
 const imageMap: Record<string, string> = {
   "/src/assets/products/radiance-serum.jpg": radianceSerum,
@@ -39,6 +51,18 @@ const imageMap: Record<string, string> = {
   "/src/assets/products/aha-toner.jpg": ahaToner,
   "/src/assets/products/sunscreen.jpg": sunscreen,
   "/src/assets/products/sleeping-mask.jpg": sleepingMask,
+  "/src/assets/products/rose-facial-oil.jpg": roseFacialOil,
+  "/src/assets/products/clay-mask.jpg": clayMask,
+  "/src/assets/products/hyaluronic-serum.jpg": hyaluronicSerum,
+  "/src/assets/products/overnight-cream.jpg": overnightCream,
+  "/src/assets/products/tea-tree-toner.jpg": teaTreeToner,
+  "/src/assets/products/peptide-cream.jpg": peptideCream,
+  "/src/assets/products/bakuchiol-serum.jpg": bakuchiolSerum,
+  "/src/assets/products/mineral-sunscreen.jpg": mineralSunscreen,
+  "/src/assets/products/squalane-oil.jpg": squalaneOil,
+  "/src/assets/products/foam-cleanser.jpg": foamCleanser,
+  "/src/assets/products/turmeric-mask.jpg": turmericMask,
+  "/src/assets/products/caffeine-eye.jpg": caffeineEye,
 };
 
 /**
